@@ -1,0 +1,17 @@
+<% if @tracks.any?  %>
+  <ul>
+    <% @tracks.each do |track| %>
+      <li>
+        <a class="lyrics-link" data-lyrics="<%= track['track_id'] %>" href="/bands/<%= @band['mbid'] %>/tracks/<%= track['track_id'] %>?language=<%= params[:language] %>">
+          “<%= track['track_name'] %>” from “<%= track['album_name'] %>”
+        </a>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p class="notice">No lyrics :(</p>
+<% end %>
+
+<p>
+  <a href="/bands?language=<%= params[:language] %>&genre=<%= params[:genre] %>">Choose another band</a>
+</p>

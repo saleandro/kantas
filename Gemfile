@@ -1,0 +1,10 @@
+source :gemcutter
+gem 'sinatra'
+gem 'redis'
+gem 'nokogiri'
+gem 'json'
+gem 'sequel'
+gem 'curb'
+gem 'activesupport'
+gem 'i18n'
+gem 'hpricot'

@@ -16,3 +16,7 @@ tmp
 .yardoc
 _yardoc
 doc/
+vendor/cache
+.rbenv-version
+config/api_keys.yml
+test.rb

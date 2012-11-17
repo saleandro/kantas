@@ -1,0 +1,12 @@
+<form method="get" action="/bands">
+  <select name="language">
+    <option value="">Select a language</option>
+    <% @languages.each do |ln, value|  %>
+      <option value=<%= ln %>><%= value['name'] %></option>
+    <% end %>
+  </select>
+
+  <input name="genre" type="text" placeholder="Genre (optional)">
+
+  <input type="submit">
+</form>

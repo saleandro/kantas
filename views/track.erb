@@ -1,0 +1,72 @@
+<h1>Learning <%= @language_name %> with <%= @track['artist_name'] %></h1>
+
+<div class="row">
+  <div class="span11">
+    <h2>“<%= @track['track_name'] %>” from “<%= @track['album_name'] %>”</h2>
+    <div class="row">
+      <div class="span3"><div id="player"></div></div>
+      <div class="span8">
+        <% @lyrics_with_blanks['lyrics_body'].each_with_index do |line, i|
+            line.each_with_index do |word, j|
+              if word == '__BLANK__' %>
+                <input type="text" placeholder="" name="word[<%= i %>][<%= j %>]" id="word-<%= i %>-<%= j %>" data-value="<%= @lyrics_with_blanks['removed_words'][i][j] %>" value="">
+                <script type="text/javascript">
+                  $(document).ready(function() {
+                    $('#word-<%= i %>-<%= j %>').keyup(function(event){
+                      var el = $('#word-<%= i %>-<%= j %>');
+                      console.log(el.val());
+                      console.log(el.attr('data-value'));
+                      if (el.val() == el.attr('data-value')) {
+                        el.replaceWith(el.val());
+                      }
+                    });
+                  });
+                </script>
+              <% else %>
+                <%= word %>
+              <% end %>
+              <%= ' ' %>
+            <% end %>
+            <%= '<br>'  %>
+          <% end %>
+        <img src="<%= @track['pixel_tracking_url'] %>">
+        <p><%= @track['lyrics_copyright'] %></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p>
+  <a href="/bands/<%= params[:mbid] %>/tracks?language=<%= params[:language] %>&genre=<%= params[:genre] %>">Choose another track</a>
+</p>
+
+<script src="http://toma.hk/api.js?v=1"></script>
+<script type="text/javascript">
+  renderTrack = function() {
+    var title = <%= @track['track_name'].inspect %>;
+    var artist = <%= @track['artist_name'].inspect %>;
+    var width = 200;
+    var height = 200;
+
+    var trackNew = window.tomahkAPI.Track(title, artist, {
+        width:width,
+        height:height,
+        disabledResolvers: [  ],
+        handlers: {
+            onloaded: function() {
+            },
+            onended: function() {
+            },
+            onplayable: function() {
+            },
+            onresolved: function(resolver, result) {
+            },
+            ontimeupdate: function(timeupdate) {
+            }
+        }
+    });
+    var playerEl = document.getElementById("player");
+    playerEl.insertBefore(trackNew.render(),playerEl.childNodes[0]);
+  }
+</script>
+

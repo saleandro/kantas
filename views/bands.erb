@@ -1,0 +1,5 @@
+<ul>
+  <% @bands.each do |band| %>
+    <li><a href="/bands/<%= band['mbid'] %>/tracks?language=<%= params[:language] %>"><%= band['name'] %> from <%= band['country'] %> <%= band['tags'].join(', ') %></a></li>
+  <% end %>
+</ul>
