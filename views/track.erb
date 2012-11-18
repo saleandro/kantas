@@ -18,7 +18,7 @@
                   $(document).ready(function() {
                     $('#word-<%= i %>-<%= j %>').keyup(function(event){
                       var el = $('#word-<%= i %>-<%= j %>');
-                      if (el.val().toLowerCase() == el.attr('data-value').toLowerCase()) {
+                      if (el.val().toLowerCase().replace(',', '').replace('.', '') == el.attr('data-value').toLowerCase().replace(',', '').replace('.', '')) {
                         el.replaceWith(el.val());
                         if ($('input').length == 0) {
                           $('.alert-success').show();
