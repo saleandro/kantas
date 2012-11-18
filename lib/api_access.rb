@@ -72,11 +72,12 @@ module ApiAccess
     res
   end
 
-  def read_from_curb(url)
+  def read_from_curb(url, compressed=false)
     curb_connection.url = url
-    curb_connection.headers.update({"accept-encoding" => "gzip, compressed"})
+    curb_connection.headers.update({"accept-encoding" => "gzip, compressed"}) if compressed
     curb_connection.http_get
-    process_response(url, curb_connection.response_code, ActiveSupport::Gzip.decompress(curb_connection.body_str))
+    body =  compressed ? ActiveSupport::Gzip.decompress(curb_connection.body_str) : curb_connection.body_str
+    process_response(url, curb_connection.response_code, body)
   end
 
   def curb_connection

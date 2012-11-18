@@ -1,4 +1,5 @@
-<form method="get" action="/bands">
+<h2>Find bands</h2>
+<form method="get" action="/bands" class="navbar-form pull-left">
   <select name="language">
     <option value="">Select a language</option>
     <% @languages.each do |ln, value|  %>
@@ -8,5 +9,5 @@
 
   <input name="genre" type="text" placeholder="Genre (optional)">
 
-  <input type="submit">
+  <input type="submit" value="Search">
 </form>

@@ -1,5 +1,16 @@
-<ul>
+<ul class="bands media-grid">
   <% @bands.each do |band| %>
-    <li><a href="/bands/<%= band['mbid'] %>/tracks?language=<%= params[:language] %>"><%= band['name'] %> from <%= band['country'] %> <%= band['tags'].join(', ') %></a></li>
+    <li><a class="artist-image" href="/bands/<%= band['mbid'] %>/tracks?language=<%= params[:language] %>">
+      <img class="thumbnail" src="<%= band['image'] %>" width="142" height="142">
+      <span class="band"><%= band['name'] %></span>
+      </a>
+      <div class="stats">
+        <% if band['tags'].any?  %>
+        <div class="tags">
+<%= band['tags'].first(5).join(', ') %></div>
+          <% end  %>
+        <img src="/img/flags/<%= band['country'] %>.png">
+      </div>
+    </li>
   <% end %>
 </ul>

@@ -17,7 +17,7 @@ module Kantas
 
     def bands_in_country(country, genre=nil)
       query = "country:#{country}"
-      query << " AND tag:#{genre})" if !genre.nil? && genre.strip != ''
+      query << " AND tag:#{genre}" if !genre.nil? && genre.strip != ''
       url = "http://www.musicbrainz.org/ws/2/artist/?query=#{CGI.escape query}"
       data = cached_data_from(url, :raw)
       xml = Hpricot::XML(data)
@@ -28,9 +28,17 @@ module Kantas
         artist['name'] = a.search('/name').inner_html
         artist['country'] = a.search('/country').inner_html
         artist['tags'] = a.search('/tag-list/tag').map {|t| t.search('/name').inner_html}
+        artist['image'] = artist_image(artist['mbid'])
         artists << artist
       end
       artists
+    end
+
+    def artist_image(mbid)
+      id = "musicbrainz:artist:#{mbid}"
+      url = "http://developer.echonest.com/api/v4/artist/images?api_key=#{Kantas.key('echonest')}&id=#{id}&format=json&results=1&start=0&license=unknown"
+      data = cached_data_from(url)
+      data['response']['images'] && data['response']['images'].any? ? data['response']['images'].first['url'] : 'http://static2.songkick.com/images//default_images/col2/default-artist.png'
     end
 
     def top_tracks(mbid)

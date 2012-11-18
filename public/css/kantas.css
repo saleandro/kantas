@@ -1,0 +1,53 @@
+/*a.artist-image, span.artist-image {*/
+  /*float:left;*/
+  /*background-color: black;*/
+  /*border: 2px solid white;*/
+  /*display: block;*/
+  /*height: 242px;*/
+  /*overflow: hidden;*/
+  /*width: 242px;*/
+  /*vertica-align:top;*/
+
+  /*border-radius: 0px;*/
+  /*box-shadow: none;*/
+  /*margin: 0 0 0px 0px;*/
+  /*padding: 0px;*/
+/*}*/
+
+/*a.artist-image {*/
+ /*cursor: pointer;*/
+/*}*/
+
+a.artist-image:hover {
+  text-decoration: none;
+}
+
+a.artist-image img {
+  height: 142px;
+  width: 142px;
+}
+.artist-name {
+  font-size: 1.6em;
+  margin: 10px;
+}
+
+
+.bands {
+  list-style: none;
+}
+
+.bands li {
+  /*display: inline-block;*/
+  width: 242px;
+  margin-bottom: 5px;
+
+}
+
+.stats {
+  width: 100px;
+}
+
+.tags {
+  font-size: 10px;
+  line-height: 15px;
+}
