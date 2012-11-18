@@ -3,11 +3,11 @@
   <select name="language">
     <option value="">Select a language</option>
     <% @languages.each do |ln, value|  %>
-      <option value=<%= ln %>><%= value['name'] %></option>
+      <option value=<%= ln %> <%= params[:language] == ln ? 'selected=selected' : '' %>><%= value['name'] %></option>
     <% end %>
   </select>
 
-  <input name="genre" type="text" placeholder="Genre (optional)">
+  <input name="genre" type="text" placeholder="Genre (optional)" value=<%= params[:genre] %>>
 
   <input type="submit" value="Search">
 </form>

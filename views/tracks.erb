@@ -4,7 +4,7 @@
   <ul class="tracks">
     <% @tracks.each do |track| %>
       <li>
-        <a class="lyrics-link" data-lyrics="<%= track['track_id'] %>" href="/bands/<%= @band['mbid'] %>/tracks/<%= track['track_id'] %>?language=<%= params[:language] %>">
+        <a class="lyrics-link" data-lyrics="<%= track['track_id'] %>" href="/bands/<%= @band['mbid'] %>/tracks/<%= track['track_id'] %>?language=<%= params[:language] %>&genre=<%= params[:genre] %>">
           “<%= track['track_name'] %>” from “<%= track['album_name'] %>”
         </a>
       </li>

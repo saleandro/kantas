@@ -1,7 +1,7 @@
 <% if @bands.any?  %>
 <ul class="bands media-grid">
   <% @bands.each do |band| %>
-    <li><a class="artist-image" href="/bands/<%= band['mbid'] %>/tracks?language=<%= params[:language] %>">
+    <li><a class="artist-image" href="/bands/<%= band['mbid'] %>/tracks?language=<%= params[:language] %>&genre=<%= params[:genre] %>">
       <img class="thumbnail" src="<%= band['image'] %>" width="142" height="142">
       <span class="band"><%= band['name'] %></span>
       </a>
@@ -16,5 +16,5 @@
 </ul>
 <% else %>
   <p class="notice">No bands :( </p>
-  <p><a href="/">Start again</a></p>
+  <p><a href="/?language=<%= params[:language] %>&genre=<%= params[:genre] %>">Start again</a></p>
 <% end %>
