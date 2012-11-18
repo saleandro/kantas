@@ -20,11 +20,12 @@
                     $('#word-<%= i %>-<%= j %>').keyup(function(event){
                       var el = $('#word-<%= i %>-<%= j %>');
                       if (el.val().toLowerCase().replace(',', '').replace('.', '') == el.attr('data-value').toLowerCase().replace(',', '').replace('.', '')) {
+                        var next = $(':input:eq(' + ($(":input").index(el) + 1) + ")");
                         el.replaceWith(el.val());
                         if ($('input').length == 0) {
                           $('.alert-success').show();
                         } else {
-                          $('input').first().focus();
+                          next.focus();
                         }
                       } else {
                         if (el.val() != '') {
