@@ -19,9 +19,9 @@
                   $(document).ready(function() {
                     $('#word-<%= i %>-<%= j %>').keyup(function(event){
                       var el = $('#word-<%= i %>-<%= j %>');
-                      if (el.val().toLowerCase().replace(',', '').replace('.', '') == el.attr('data-value').toLowerCase().replace(',', '').replace('.', '')) {
+                      if (el.val().toLowerCase().replace(/[-.,()&$#!\[\]{}"']/, '') == el.attr('data-value').toLowerCase().replace(/[-.,()&$#!\[\]{}"']/, '')) {
                         var next = $(':input:eq(' + ($(":input").index(el) + 1) + ")");
-                        el.replaceWith(el.val());
+                        el.replaceWith(el.attr('data-value'));
                         if ($('input').length == 0) {
                           $('.alert-success').show();
                         } else {
