@@ -86,3 +86,11 @@ a.visited {
 footer {
   margin-bottom: 20px;
 }
+
+.hidden {
+  display: none;
+}
+
+.alert-success {
+  text-align: center;
+}

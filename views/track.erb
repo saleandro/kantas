@@ -1,5 +1,9 @@
 <h2>Learning <a href="/bands?language=<%= params[:language] %>&genre=<%= params[:genre] %>"><%= @language_name %></a> with <a href="/bands/<%= params[:mbid] %>/tracks?language=<%= params[:language] %>&genre=<%= params[:genre] %>"><%= @track['artist_name'] %></a></h2>
 
+<div class="alert alert-success hidden">
+  Well done!
+</div>
+
 <div class="row">
   <div class="span11">
     <h3>“<%= @track['track_name'] %>” from “<%= @track['album_name'] %>”</h3>
@@ -17,7 +21,7 @@
                       if (el.val().toLowerCase() == el.attr('data-value').toLowerCase()) {
                         el.replaceWith(el.val());
                         if ($('input').length == 0) {
-                          alert('Parabens!');
+                          $('.alert-success').show();
                         } else {
                           $('input').first().focus();
                         }
