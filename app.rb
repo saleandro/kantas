@@ -16,7 +16,7 @@ get '/bands' do
   countries.each do |country|
     bands << Kantas.bands_in_country(country, params['genre'])
   end
-  @bands = bands.flatten.compact.shuffle.first(20)
+  @bands = bands.flatten.compact.shuffle.first(18)
   erb :bands
 end
 

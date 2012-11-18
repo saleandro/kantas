@@ -21,7 +21,7 @@ module Kantas
     def bands_in_country(country, genre=nil)
       query = "country:#{country}"
       query << " AND tag:#{genre}" if !genre.nil? && genre.strip != ''
-      url = "http://www.musicbrainz.org/ws/2/artist/?query=#{CGI.escape query}"
+      url = "http://www.musicbrainz.org/ws/2/artist/?query=#{CGI.escape query}&limit=50"
       data = cached_data_from(url, :raw)
       xml = Hpricot::XML(data)
       artists = []
