@@ -7,9 +7,8 @@
       </a>
       <div class="stats">
         <% if band['tags'].any?  %>
-        <div class="tags">
-<%= band['tags'].first(5).join(', ') %></div>
-          <% end  %>
+          <div class="tags"><%= band['tags'].first(5).join(', ') %></div>
+        <% end %>
         <img src="/img/flags/<%= band['country'].downcase %>.png">
       </div>
     </li>

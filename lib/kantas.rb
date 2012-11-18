@@ -12,6 +12,9 @@ module Kantas
     def languages
       {'es' => {'countries' => ['es', 'mx', 'ar'], 'name' => 'Español'},
        'pt' => {'countries' => ['pt', 'br'],       'name' => 'Português'},
+       'fr' => {'countries' => ['fr'], 'name' => 'Français'},
+       'it' => {'countries' => ['it'], 'name' => 'Italiano'},
+       'de' => {'countries' => ['de'], 'name' => 'Deutsch'},
        'en' => {'countries' => ['us', 'gb', 'au'], 'name' => 'English'}}
     end
 

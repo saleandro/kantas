@@ -10,7 +10,8 @@
     <div class="row">
       <div class="span3"><div id="player"></div></div>
       <div class="span8">
-        <% @lyrics_with_blanks['lyrics_body'].each_with_index do |line, i|
+        <div id="lyrics">
+          <% @lyrics_with_blanks['lyrics_body'].each_with_index do |line, i|
             line.each_with_index do |word, j|
               if word == '__BLANK__' %>
                 <input type="text" placeholder="" name="word[<%= i %>][<%= j %>]" id="word-<%= i %>-<%= j %>" data-value="<%= @lyrics_with_blanks['removed_words'][i][j] %>" value="">
@@ -40,6 +41,7 @@
             <% end %>
             <%= '<br>'  %>
           <% end %>
+        </div>
         <img src="<%= @track['pixel_tracking_url'] %>">
         <p class="copy"><%= @track['lyrics_copyright'] %></p>
       </div>
