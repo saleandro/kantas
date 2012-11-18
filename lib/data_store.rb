@@ -28,6 +28,9 @@ module DataStore
     def store
       if ENV["DATABASE_URL"]
         @sqldb ||= Sequel.connect ENV["DATABASE_URL"]
+      elsif ENV["REDISTOGO_URL"]
+        uri = URI.parse(ENV["REDISTOGO_URL"])
+        @redisdb ||= Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
       else
         uri = URI.parse('redis://localhost:6379')
         @redisdb ||= Redis.new(:host => uri.host, :port => uri.port, :password => uri.password, :user => uri.user, :thread_safe => true)
