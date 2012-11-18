@@ -18,6 +18,18 @@
  /*cursor: pointer;*/
 /*}*/
 
+
+h1 {
+   font-size: 68.5px;
+    margin: 10px;
+    padding: 30px;
+    text-align: center;
+  font-family: maven-pro, serif;
+}
+
+a:hover{
+  text-decoration: none;
+}
 a.artist-image:hover {
   text-decoration: none;
 }
@@ -32,7 +44,7 @@ a.artist-image img {
 }
 
 
-.bands {
+.bands, .tracks {
   list-style: none;
 }
 
@@ -40,6 +52,8 @@ a.artist-image img {
   /*display: inline-block;*/
   width: 242px;
   margin-bottom: 5px;
+  display: inline-block;
+  vertical-align: top;
 
 }
 
@@ -50,4 +64,25 @@ a.artist-image img {
 .tags {
   font-size: 10px;
   line-height: 15px;
+}
+
+.copy {
+  font-size: 11px;
+  text-align: right;
+}
+
+input.error {
+  border: 1px solid red;
+}
+
+a, a:hover {
+  color: #009966;
+}
+
+a.visited {
+  color: #13b47e;
+}
+
+footer {
+  margin-bottom: 20px;
 }

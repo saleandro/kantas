@@ -1,8 +1,8 @@
-<h1>Learning <%= @language_name %> with <%= @track['artist_name'] %></h1>
+<h2>Learning <a href="/bands?language=<%= params[:language] %>&genre=<%= params[:genre] %>"><%= @language_name %></a> with <a href="/bands/<%= params[:mbid] %>/tracks?language=<%= params[:language] %>&genre=<%= params[:genre] %>"><%= @track['artist_name'] %></a></h2>
 
 <div class="row">
   <div class="span11">
-    <h2>“<%= @track['track_name'] %>” from “<%= @track['album_name'] %>”</h2>
+    <h3>“<%= @track['track_name'] %>” from “<%= @track['album_name'] %>”</h3>
     <div class="row">
       <div class="span3"><div id="player"></div></div>
       <div class="span8">
@@ -14,10 +14,17 @@
                   $(document).ready(function() {
                     $('#word-<%= i %>-<%= j %>').keyup(function(event){
                       var el = $('#word-<%= i %>-<%= j %>');
-                      console.log(el.val());
-                      console.log(el.attr('data-value'));
-                      if (el.val() == el.attr('data-value')) {
+                      if (el.val().toLowerCase() == el.attr('data-value').toLowerCase()) {
                         el.replaceWith(el.val());
+                        if ($('input').length == 0) {
+                          alert('Parabens!');
+                        } else {
+                          $('input').first().focus();
+                        }
+                      } else {
+                        if (el.val() != '') {
+                          el.addClass('error');
+                        }
                       }
                     });
                   });
@@ -30,15 +37,11 @@
             <%= '<br>'  %>
           <% end %>
         <img src="<%= @track['pixel_tracking_url'] %>">
-        <p><%= @track['lyrics_copyright'] %></p>
+        <p class="copy"><%= @track['lyrics_copyright'] %></p>
       </div>
     </div>
   </div>
 </div>
-
-<p>
-  <a href="/bands/<%= params[:mbid] %>/tracks?language=<%= params[:language] %>&genre=<%= params[:genre] %>">Choose another track</a>
-</p>
 
 <script src="http://toma.hk/api.js?v=1"></script>
 <script type="text/javascript">

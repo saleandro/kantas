@@ -34,11 +34,24 @@ module Kantas
       artists
     end
 
+    def artist(mbid)
+      id = "musicbrainz:artist:#{mbid}"
+      url = "http://developer.echonest.com/api/v4/artist/profile?api_key=#{Kantas.key('echonest')}&id=#{id}&format=json&bucket=images"
+      data = cached_data_from(url)
+      artist = data['response']['artist'] ? data['response']['artist'] : nil
+      if artist
+        artist['image'] = artist['images'].any? ? artist['images'].first['url'] : nil
+        artist['artist_name'] = artist['name']
+      end
+      puts artist.inspect
+      artist
+    end
+
     def artist_image(mbid)
       id = "musicbrainz:artist:#{mbid}"
       url = "http://developer.echonest.com/api/v4/artist/images?api_key=#{Kantas.key('echonest')}&id=#{id}&format=json&results=1&start=0&license=unknown"
       data = cached_data_from(url)
-      data['response']['images'] && data['response']['images'].any? ? data['response']['images'].first['url'] : 'http://static2.songkick.com/images//default_images/col2/default-artist.png'
+      data['response']['images'] && data['response']['images'].any? ? data['response']['images'].first['url'] : 'http://www.songkick.com/images//default_images/col2/default-artist.png'
     end
 
     def top_tracks(mbid)

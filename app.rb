@@ -27,6 +27,7 @@ get '/bands/:mbid/tracks' do
 
   @band = {'mbid' => params['mbid']}
   @language_name = Kantas.languages[params['language']]['name']
+  @artist = Kantas.artist(params['mbid'])
   tracks =  Kantas.top_tracks(params['mbid'])
   tracks_with_lyrics = []
   tracks.each do |track|

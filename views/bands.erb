@@ -1,3 +1,4 @@
+<% if @bands.any?  %>
 <ul class="bands media-grid">
   <% @bands.each do |band| %>
     <li><a class="artist-image" href="/bands/<%= band['mbid'] %>/tracks?language=<%= params[:language] %>">
@@ -14,3 +15,7 @@
     </li>
   <% end %>
 </ul>
+<% else %>
+  <p class="notice">No bands :( </p>
+  <p><a href="/">Start again</a></p>
+<% end %>
