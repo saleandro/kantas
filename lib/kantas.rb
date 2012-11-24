@@ -85,6 +85,15 @@ module Kantas
       return data['message']['body']['lyrics']
     end
 
+    def subtitle_by_track_id(track_id)
+      key = Kantas.key('musixmatch')
+      url = "http://api.musixmatch.com/ws/1.1/track.subtitle.get?track_id=#{CGI.escape(track_id.to_s)}&apikey=#{key}"
+      data = cached_data_from(url)
+
+      return nil unless data['message'] && data['message']['body']
+      data['message']['body']['subtitle']
+    end
+
     def track_by_id(track_id)
       key = Kantas.key('musixmatch')
       url = "http://api.musixmatch.com/ws/1.1/track.get?track_id=#{CGI.escape(track_id.to_s)}&apikey=#{key}"
