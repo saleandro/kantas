@@ -1,29 +1,12 @@
-/*a.artist-image, span.artist-image {*/
-  /*float:left;*/
-  /*background-color: black;*/
-  /*border: 2px solid white;*/
-  /*display: block;*/
-  /*height: 242px;*/
-  /*overflow: hidden;*/
-  /*width: 242px;*/
-  /*vertica-align:top;*/
-
-  /*border-radius: 0px;*/
-  /*box-shadow: none;*/
-  /*margin: 0 0 0px 0px;*/
-  /*padding: 0px;*/
-/*}*/
-
-/*a.artist-image {*/
- /*cursor: pointer;*/
-/*}*/
-
-
 h1 {
-   font-size: 68.5px;
-    margin: 10px;
-    padding: 30px;
-    text-align: center;
+  font-size: 68.5px;
+  margin: 10px;
+  padding: 30px;
+  text-align: center;
+  font-family: maven-pro, serif;
+}
+
+h2, h3 {
   font-family: maven-pro, serif;
 }
 
@@ -43,18 +26,15 @@ a.artist-image img {
   margin: 10px;
 }
 
-
 .bands, .tracks {
   list-style: none;
 }
 
 .bands li {
-  /*display: inline-block;*/
   width: 242px;
   margin-bottom: 5px;
   display: inline-block;
   vertical-align: top;
-
 }
 
 .stats {
@@ -94,3 +74,9 @@ footer {
 .alert-success {
   text-align: center;
 }
+
+p.highlight {
+  font-weight: bold;
+}
+
+

@@ -11,27 +11,15 @@
       <div class="span3"><div id="player"></div></div>
       <div class="span8">
         <div id="lyrics">
-          <% @lyrics_with_blanks['lyrics_body'].each_with_index do |line, i|
-            line.each_with_index do |word, j|
+          <% @lyrics_with_blanks['lyrics_body'].each_with_index do |line, i| %>
+            <p <% if @lyrics_with_time %>class="lyrics-with-time" data-value="<%=  @lyrics_with_time[i][0] %>"<% end %>>
+            <% line.each_with_index do |word, j|
               if word == '__BLANK__' %>
                 <input type="text" placeholder="" name="word[<%= i %>][<%= j %>]" id="word-<%= i %>-<%= j %>" data-value="<%= @lyrics_with_blanks['removed_words'][i][j] %>" value="">
                 <script type="text/javascript">
                   $(document).ready(function() {
-                    $('#word-<%= i %>-<%= j %>').keyup(function(event){
-                      var el = $('#word-<%= i %>-<%= j %>');
-                      if (el.val().toLowerCase().replace(/[-.,()&$#!\[\]{}"']/, '') == el.attr('data-value').toLowerCase().replace(/[-.,()&$#!\[\]{}"']/, '')) {
-                        var next = $(':input:eq(' + ($(":input").index(el) + 1) + ")");
-                        el.replaceWith(el.attr('data-value'));
-                        if ($('input').length == 0) {
-                          $('.alert-success').show();
-                        } else {
-                          next.focus();
-                        }
-                      } else {
-                        if (el.val() != '') {
-                          el.addClass('error');
-                        }
-                      }
+                    $('#word-<%= i %>-<%= j %>').keyup(function(event) {
+                      Kantas.checkResponse(<%= i.inspect %>, <%= j.inspect %>);
                     });
                   });
                 </script>
@@ -40,7 +28,7 @@
               <% end %>
               <%= ' ' %>
             <% end %>
-            <%= '<br>'  %>
+            </p>
           <% end %>
         </div>
         <img src="<%= @track['pixel_tracking_url'] %>">
@@ -52,31 +40,8 @@
 
 <script src="http://toma.hk/api.js?v=1"></script>
 <script type="text/javascript">
-  renderTrack = function() {
-    var title = <%= @track['track_name'].inspect %>;
-    var artist = <%= @track['artist_name'].inspect %>;
-    var width = 200;
-    var height = 200;
-
-    var trackNew = window.tomahkAPI.Track(title, artist, {
-        width:width,
-        height:height,
-        disabledResolvers: [  ],
-        handlers: {
-            onloaded: function() {
-            },
-            onended: function() {
-            },
-            onplayable: function() {
-            },
-            onresolved: function(resolver, result) {
-            },
-            ontimeupdate: function(timeupdate) {
-            }
-        }
-    });
-    var playerEl = document.getElementById("player");
-    playerEl.insertBefore(trackNew.render(),playerEl.childNodes[0]);
-  }
+  $(document).ready(function() {
+    Kantas.renderTrack(<%= @track['artist_name'].inspect %>, <%= @track['track_name'].inspect %>);
+  });
 </script>
 
