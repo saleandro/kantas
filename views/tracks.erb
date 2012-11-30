@@ -1,10 +1,14 @@
+<% unless @artist %>
+  <p class="notice">No lyrics :( </p>
+  <p><a href="/bands?language=<%= params[:language] %>&genre=<%= params[:genre] %>">Choose another band</a></p>
+<% else %>
 <h2>Learning <a href="/bands?language=<%= params[:language] %>&genre=<%= params[:genre] %>"><%= @language_name %></a> with <a href="/bands/<%= params[:mbid] %>/tracks?language=<%= params[:language] %>&genre=<%= params[:genre] %>"><%= @artist['artist_name'] %></a></h2>
 <img class="thumbnail" src="<%= @artist['image'] %>" width="142" height="142" align="right">
 <% if @tracks.any?  %>
   <ul class="tracks">
     <% @tracks.each do |track| %>
       <li>
-        <a class="lyrics-link" data-lyrics="<%= track['track_id'] %>" href="/bands/<%= @band['mbid'] %>/tracks/<%= track['track_id'] %>?language=<%= params[:language] %>&genre=<%= params[:genre] %>">
+        <a class="lyrics-link" data-lyrics="<%= track['track_id'] %>" href="/bands/<%= @artist['mbid'] %>/tracks/<%= track['track_id'] %>?language=<%= params[:language] %>&genre=<%= params[:genre] %>">
           “<%= track['track_name'] %>” from “<%= track['album_name'] %>”
         </a>
       </li>
@@ -13,5 +17,6 @@
 <% else %>
   <p class="notice">No lyrics :( </p>
   <p><a href="/bands?language=<%= params[:language] %>&genre=<%= params[:genre] %>">Choose another band</a></p>
+<% end %>
 <% end %>
 

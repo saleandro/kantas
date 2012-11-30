@@ -45,8 +45,8 @@ module Kantas
       if artist
         artist['image'] = artist['images'].any? ? artist['images'].first['url'] : nil
         artist['artist_name'] = artist['name']
+        artist['mbid'] = mbid
       end
-      puts artist.inspect
       artist
     end
 
@@ -60,7 +60,7 @@ module Kantas
     def top_tracks(mbid)
       id = "musicbrainz:artist:#{mbid}"
       url = "http://developer.echonest.com/api/v4/artist/songs?api_key=#{Kantas.key('echonest')}&id=#{id}&format=json&start=0&results=10"
-      data = cached_data_from(url)['response']['songs']
+      data = cached_data_from(url)['response']['songs'] || []
     end
 
     def lyrics(artist_mbid, track_name)
