@@ -1,21 +1,21 @@
-<h2>Learning <a href="/bands?language=<%= params[:language] %>&genre=<%= params[:genre] %>"><%= @language_name %></a> with <a href="/bands/<%= params[:mbid] %>/tracks?language=<%= params[:language] %>&genre=<%= params[:genre] %>"><%= @track['artist_name'] %></a></h2>
+<h2>Learning <a href="/bands?<%= escape_url(:language => params[:language], :genre => params[:genre]) %>"><%= @language_name %></a> with <a href="/bands/<%= params[:mbid] %>/tracks?<%= escape_url(:language => params[:language], :genre => params[:genre]) %>"><%= @track['artist_name'] %></a></h2>
 
 <div class="alert alert-success hidden">
   Well done!
 </div>
 
-<div class="row">
+<div class="row-fluid">
   <div class="span11">
-    <h3>“<%= @track['track_name'] %>” from “<%= @track['album_name'] %>”</h3>
-    <div class="row">
-      <div class="span3"><div id="player"></div></div>
-      <div class="span8">
+    <h3>“<%=h @track['track_name'] %>” from “<%=h @track['album_name'] %>”</h3>
+    <div class="row-fluid">
+      <div class="span4" id="player"></div>
+      <div class="span7">
         <div id="lyrics">
           <% @lyrics_with_blanks['lyrics_body'].each_with_index do |line, i| %>
-            <p <% if @lyrics_with_time %>class="lyrics-with-time" data-value="<%=  @lyrics_with_time[i][0] %>"<% end %>>
+            <p <% if @lyrics_with_time %>class="lyrics-with-time" data-time="<%=  @lyrics_with_time[i][0] %>"<% end %>>
             <% line.each_with_index do |word, j|
               if word == '__BLANK__' %>
-                <input type="text" placeholder="" name="word[<%= i %>][<%= j %>]" id="word-<%= i %>-<%= j %>" data-value="<%= @lyrics_with_blanks['removed_words'][i][j] %>" value="">
+                <input type="text" placeholder="" name="word[<%= i %>][<%= j %>]" id="word-<%= i %>-<%= j %>" data-value="<%=h @lyrics_with_blanks['removed_words'][i][j] %>" value="">
                 <script type="text/javascript">
                   $(document).ready(function() {
                     $('#word-<%= i %>-<%= j %>').keyup(function(event) {
@@ -24,15 +24,14 @@
                   });
                 </script>
               <% else %>
-                <%= word %>
+                <%=h word %>
               <% end %>
-              <%= ' ' %>
             <% end %>
             </p>
           <% end %>
         </div>
         <img src="<%= @track['pixel_tracking_url'] %>">
-        <p class="copy"><%= @track['lyrics_copyright'] %></p>
+        <p class="copy"><%=h @track['lyrics_copyright'] %></p>
       </div>
     </div>
   </div>
@@ -41,7 +40,7 @@
 <script src="http://toma.hk/api.js?v=1"></script>
 <script type="text/javascript">
   $(document).ready(function() {
-    Kantas.renderTrack(<%= @track['artist_name'].inspect %>, <%= @track['track_name'].inspect %>);
+    Kantas.renderTrack("<%=h @track['artist_name'] %>", "<%=h @track['track_name'] %>");
   });
 </script>
 

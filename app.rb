@@ -1,3 +1,4 @@
+require 'cgi'
 require 'sinatra'
 require File.dirname(__FILE__) + '/lib/kantas'
 
@@ -25,13 +26,12 @@ get '/bands/:mbid/tracks' do
     redirect '/'
   end
 
-  @band = {'mbid' => params['mbid']}
   @language_name = Kantas.languages[params['language']]['name']
   @artist = Kantas.artist(params['mbid'])
   tracks =  Kantas.top_tracks(params['mbid'])
   tracks_with_lyrics = []
   tracks.each do |track|
-    lyrics = Kantas.lyrics(@band['mbid'], track['title'])
+    lyrics = Kantas.lyrics(params['mbid'], track['title'])
     tracks_with_lyrics << lyrics if lyrics && lyrics['lyrics_language'] == params['language']
   end
   @tracks = tracks_with_lyrics
@@ -43,15 +43,38 @@ get '/bands/:mbid/tracks/:track_id' do
     redirect '/'
   end
 
-  @on_load_javascript = 'renderTrack()'
-
   @language_name = Kantas.languages[params['language']]['name']
-  @band = {'mbid' => params['mbid']}
+
   track = Kantas.track_by_id(params['track_id'])
-  lyrics = Kantas.lyrics_by_track_id(params['track_id'])
-  @track = track.merge(lyrics)
-  @lyrics_with_blanks = Kantas.lyrics_with_blanks(@track['lyrics_body'])
+
+  @lyrics_with_time = nil
+  if track['has_subtitles'] == 1
+    response = Kantas.subtitle_by_track_id(params['track_id'])
+    @lyrics_with_time = response['subtitle_body'].split("\n").map do |l|
+      str_time, lyrics = l.split(']')
+      str_time.gsub!('[', '')
+      time  = Time.strptime(str_time, '%M:%S.%L')
+      time = time.min * 60.0 + time.sec
+      [time, lyrics]
+    end
+
+    lyrics = @lyrics_with_time.map{|i| i[1]}.join("\n")
+  else
+    response = Kantas.lyrics_by_track_id(params['track_id'])
+    lyrics = response['lyrics_body']
+  end
+  @track = track.merge(response)
+  @lyrics_with_blanks = Kantas.lyrics_with_blanks(lyrics)
+
   erb :track
 end
 
-# todo: enconding not working: #india http://localhost:3000/bands/f197a8df-ac2b-4e78-9913-4abf13741f12/tracks/13774484?language=pt
+helpers do
+  include Rack::Utils
+  alias_method :h, :escape_html
+
+  def escape_url(params)
+    params.map { |k,v| "#{CGI.escape k.to_s}=#{CGI.escape v.to_s}" }.join('&amp;')
+  end
+end
+

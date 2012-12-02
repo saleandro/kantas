@@ -79,4 +79,11 @@ p.highlight {
   font-weight: bold;
 }
 
+div#player {
+  width: 250px;
+  height: 250px;
+  margin-bottom: 20px;
+
+}
+
 

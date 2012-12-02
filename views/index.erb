@@ -1,13 +1,15 @@
-<h2>Find bands</h2>
-<form method="get" action="/bands" class="navbar-form pull-left">
-  <select name="language">
-    <option value="">Select a language</option>
-    <% @languages.each do |ln, value|  %>
-      <option value=<%= ln %> <%= params[:language] == ln ? 'selected=selected' : '' %>><%= value['name'] %></option>
-    <% end %>
-  </select>
+<div class="row-fluid">
+  <h2>Find bands</h2>
+  <form method="get" action="/bands" class="navbar-form pull-left">
+    <select name="language">
+      <option value="">Select a language</option>
+      <% @languages.each do |ln, value|  %>
+        <option value=<%= ln %> <%= params[:language] == ln ? 'selected=selected' : '' %>><%= value['name'] %></option>
+      <% end %>
+    </select>
 
-  <input name="genre" type="text" placeholder="Genre (optional)" value=<%= params[:genre] %>>
+    <input name="genre" type="text" placeholder="Genre (optional)" value="<%=h params[:genre] %>">
 
-  <input type="submit" value="Search">
-</form>
+    <input type="submit" value="Search">
+  </form>
+</div>

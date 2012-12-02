@@ -17,9 +17,10 @@ var Kantas = {
   },
 
   renderTrack: function(artist, title) {
-    var width = 200;
-    var height = 200;
+    var width = 250;
+    var height = 250;
     var lyrics = $('p.lyrics-with-time');
+    var lastTime = 0;
     var track = window.tomahkAPI.Track(title, artist, {
       width:width,
       height:height,
@@ -34,12 +35,20 @@ var Kantas = {
         onresolved: function(resolver, result) {
         },
         ontimeupdate: function(timeupdate) {
-          console.log(timeupdate);
-          $('p').removeClass('highlight');
-          console.log(timeupdate['currentTime']);
-          // var line = $('#t'+timeupdate['currentTime']);
-          // if (line) {
-          //   line.addClass('highlight');
+          // if (timeupdate['currentTime'] > 0) {
+          //   for (var i=0; i < lyrics.length; i++) {
+          //     var el = $(lyrics[i]);
+          //     var time = parseFloat(el.attr('data-time'));
+          //     console.log("time:"+ time + " <=  curTime:"+timeupdate['currentTime'] + ">= lastTIme:"+lastTime);
+          //     if ((time <=  timeupdate['currentTime']) && (time >= lastTime)) {
+          //       if (i > 0) {
+          //         $(lyrics[i-1]).removeClass('highlight');
+          //       }
+          //       lastTime = timeupdate['currentTime'];
+          //       el.addClass('highlight');
+          //       break;
+          //     }
+          //   }
           // }
         }
       }
