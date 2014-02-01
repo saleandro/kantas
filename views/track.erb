@@ -6,7 +6,7 @@
 
 <div class="row-fluid">
   <div class="span11">
-    <h3>“<%=h @track['track_name'] %>” from “<%=h @track['album_name'] %>”</h3>
+    <h3>“<%= @track['track_name'] %>” from “<%= @track['album_name'] %>”</h3>
     <div class="row-fluid">
       <div class="span4" id="player"></div>
       <div class="span7">
@@ -15,7 +15,7 @@
             <p <% if @lyrics_with_time %>class="lyrics-with-time" data-time="<%=  @lyrics_with_time[i][0] %>"<% end %>>
             <% line.each_with_index do |word, j|
               if word == '__BLANK__' %>
-                <input type="text" placeholder="" name="word[<%= i %>][<%= j %>]" id="word-<%= i %>-<%= j %>" data-value="<%=h @lyrics_with_blanks['removed_words'][i][j] %>" value="">
+                <input type="text" placeholder="" name="word[<%= i %>][<%= j %>]" id="word-<%= i %>-<%= j %>" data-value="<%= @lyrics_with_blanks['removed_words'][i][j] %>" value="">
                 <script type="text/javascript">
                   $(document).ready(function() {
                     $('#word-<%= i %>-<%= j %>').keyup(function(event) {
@@ -24,14 +24,14 @@
                   });
                 </script>
               <% else %>
-                <%=h word %>
+                <%= word %>
               <% end %>
             <% end %>
             </p>
           <% end %>
         </div>
         <img src="<%= @track['pixel_tracking_url'] %>">
-        <p class="copy"><%=h @track['lyrics_copyright'] %></p>
+        <p class="copy"><%= @track['lyrics_copyright'] %></p>
       </div>
     </div>
   </div>
@@ -40,7 +40,7 @@
 <script src="http://toma.hk/api.js?v=1"></script>
 <script type="text/javascript">
   $(document).ready(function() {
-    Kantas.renderTrack("<%=h @track['artist_name'] %>", "<%=h @track['track_name'] %>");
+    Kantas.renderTrack("<%= @track['artist_name'] %>", "<%= @track['track_name'] %>");
   });
 </script>
 

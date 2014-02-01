@@ -3,11 +3,11 @@
   <% @bands.each do |band| %>
     <li><a class="artist-image" href="/bands/<%= band['mbid'] %>/tracks?<%= escape_url(:language => params[:language], :genre => params[:genre]) %>">
       <img class="thumbnail" src="<%= band['image'] %>" width="142" height="142">
-      <span class="band"><%=h band['name'] %></span>
+      <span class="band"><%= band['name'] %></span>
       </a>
       <div class="stats">
         <% if band['tags'].any?  %>
-          <div class="tags"><%=h band['tags'].first(5).join(', ') %></div>
+          <div class="tags"><%= band['tags'].first(5).join(', ') %></div>
         <% end %>
         <img src="/img/flags/<%= band['country'].downcase %>.png">
       </div>

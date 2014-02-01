@@ -20,4 +20,5 @@ vendor/cache
 .rbenv-version
 test.rb
 #config/api_keys.yml
-
+vendor/cache
+vendor/bundle

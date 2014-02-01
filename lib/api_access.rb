@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'yaml'
 require 'open-uri'
 require 'json'
 require 'curb'
@@ -117,3 +118,8 @@ module ApiAccess
     raise "Error in request: status:#{status.inspect} response:#{response.inspect} url:#{url}"
   end
 end
+
+class ApiAccessor
+  extend ApiAccess
+end
+
