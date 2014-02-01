@@ -12,12 +12,18 @@ get '/bands' do
     redirect '/'
   end
 
-  countries =  Kantas.languages[params['language']]['countries']
-  bands = []
-  countries.each do |country|
-    bands << Kantas.bands_in_country(country, params['genre'])
+  if params['artist_name']
+    countries =  Kantas.languages[params['language']]['countries']
+    bands = Kantas.bands_by_name(params['artist_name'], countries)
+    @bands = bands.flatten.compact.first(18)
+  else
+    countries =  Kantas.languages[params['language']]['countries']
+    bands = []
+    countries.each do |country|
+      bands << Kantas.bands_in_country(country, params['genre'])
+    end
+    @bands = bands.flatten.compact.shuffle.first(18)
   end
-  @bands = bands.flatten.compact.shuffle.first(18)
   erb :bands
 end
 
@@ -30,11 +36,11 @@ get '/bands/:mbid/tracks' do
   @artist = Kantas.artist(params['mbid'])
   tracks =  Kantas.top_tracks(params['mbid'])
   tracks_with_lyrics = []
-  tracks.each do |track|
-    lyrics = Kantas.lyrics(params['mbid'], track['title'])
+  tracks.each do |track_title|
+    lyrics = Kantas.lyrics(params['mbid'], track_title)
     tracks_with_lyrics << lyrics if lyrics && lyrics['lyrics_language'] == params['language']
   end
-  @tracks = tracks_with_lyrics
+  @tracks = tracks_with_lyrics.uniq {|t| t['track_id']}
   erb :tracks
 end
 
@@ -49,20 +55,11 @@ get '/bands/:mbid/tracks/:track_id' do
 
   @lyrics_with_time = nil
   if track['has_subtitles'] == 1
-    response = Kantas.subtitle_by_track_id(params['track_id'])
-    if response
-      @lyrics_with_time = response['subtitle_body'].split("\n").map do |l|
-        str_time, lyrics = l.split(']')
-        str_time.gsub!('[', '')
-        time  = Time.strptime(str_time, '%M:%S.%L')
-        time = time.min * 60.0 + time.sec
-        [time, lyrics]
-      end
-
-      lyrics = @lyrics_with_time.map{|i| i[1]}.join("\n")
-    end
+    response, @lyrics_with_time = Kantas.lyrics_with_time_by_track_id(params['track_id'])
   end
-  unless @lyrics_with_time
+  if @lyrics_with_time
+    lyrics = @lyrics_with_time.map{|i| i[1]}.join("\n")
+  else
     response = Kantas.lyrics_by_track_id(params['track_id'])
     lyrics = response['lyrics_body']
   end
@@ -72,12 +69,61 @@ get '/bands/:mbid/tracks/:track_id' do
   erb :track
 end
 
+get '/bands/:mbid/tracks/:track_id/game' do
+  unless Kantas.languages.keys.include?(params['language']) && params['mbid']
+    redirect '/'
+  end
+
+  @language_name = Kantas.languages[params['language']]['name']
+
+  track = Kantas.track_by_id(params['track_id'])
+
+  lyrics_with_time = nil
+  if track['has_subtitles'] == 1
+    lyrics_with_time.map{|i| i[1]}.join("\n") if lyrics_with_time
+    response, lyrics_with_time = Kantas.lyrics_with_time_by_track_id(params['track_id'])
+    lyrics_with_blanks = Kantas.lyrics_with_blanks(lyrics_with_time.map{|i| i[1]}.join("\n"), min_word_length: 3)
+    @words_with_times = {}
+    picked_words = []
+
+    lyrics_with_blanks['lyrics_body'].each_with_index do |line, i|
+      line.each_with_index do |word, j|
+        if word == '__BLANK__'
+          picked_words << lyrics_with_blanks['removed_words'][i][j].first
+        end
+      end
+    end
+
+    puts lyrics_with_time.inspect
+    lyrics_with_blanks['lyrics_body'].each_with_index do |line, i|
+      line.each_with_index do |word, j|
+        clean_word = lyrics_with_blanks['lyrics_body'][i][j]
+        if picked_words.include?(clean_word)
+          @words_with_times[clean_word] ||= []
+          @words_with_times[clean_word] << [(lyrics_with_time[i][0] + j + 1), (lyrics_with_time[i][0] + j + 1.5)]
+        end
+      end
+    end
+
+    puts @words_with_times.inspect
+    @play_game = !!lyrics_with_time
+
+    @track = track.merge(response)
+  end
+
+  erb :game
+end
+
 helpers do
   include Rack::Utils
   alias_method :h, :escape_html
 
   def escape_url(params)
     params.map { |k,v| "#{CGI.escape k.to_s}=#{CGI.escape v.to_s}" }.join('&amp;')
+  end
+
+  def congrats_message(language)
+    Kantas.languages[language]['message']
   end
 end
 

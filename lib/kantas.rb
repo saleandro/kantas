@@ -8,12 +8,12 @@ module Kantas
     include ApiAccess
 
     def languages
-      {'es' => {'countries' => ['es', 'mx', 'ar'], 'name' => 'Español'},
-       'pt' => {'countries' => ['pt', 'br'],       'name' => 'Português'},
-       'fr' => {'countries' => ['fr'], 'name' => 'Français'},
-       'it' => {'countries' => ['it'], 'name' => 'Italiano'},
-       'de' => {'countries' => ['de'], 'name' => 'Deutsch'},
-       'en' => {'countries' => ['us', 'gb', 'au'], 'name' => 'English'}}
+      {'es' => {'countries' => Set.new(['es', 'mx', 'ar']), 'name' => 'Español', 'message' => '¡Muy Bien!'},
+       'pt' => {'countries' => Set.new(['pt', 'br']),       'name' => 'Português', 'message' => 'Parabéns!'},
+       'fr' => {'countries' => Set.new(['fr']), 'name' => 'Français', 'message' => 'Félicitations!'},
+       'it' => {'countries' => Set.new(['it']), 'name' => 'Italiano', 'message' => 'Ben Fatto!'},
+       'de' => {'countries' => Set.new(['de']), 'name' => 'Deutsch', 'message' => 'Gut gemacht!'},
+       'en' => {'countries' => Set.new(['us', 'gb', 'au', 'ca', 'nz']), 'name' => 'English', 'message' => 'Great job!'}}
     end
 
     def bands_in_country(country, genre=nil)
@@ -35,11 +35,30 @@ module Kantas
       artists
     end
 
+    def bands_by_name(name, countries)
+      return [] unless name
+      query = "artist:#{name}"
+      url = "http://musicbrainz.org/ws/2/artist/?query=#{CGI.escape query}&limit=50"
+      data = cached_data_from(url, :raw)
+      xml = Hpricot::XML(data)
+      artists = []
+      (xml/"artist-list/artist").each do |a|
+        artist = {}
+        artist['mbid'] = a.attributes['id']
+        artist['name'] = a.search('/name').inner_html
+        artist['country'] = a.search('/country').inner_html.downcase
+        artist['tags'] = a.search('/tag-list/tag').map {|t| t.search('/name').inner_html}
+        artist['image'] = artist_image(artist['mbid'])
+        artists << artist
+      end
+      artists.select {|b| countries.include?(b['country'])}
+    end
+
     def artist(mbid)
       id = "musicbrainz:artist:#{mbid}"
       url = "http://developer.echonest.com/api/v4/artist/profile?api_key=#{Kantas.key('echonest')}&id=#{id}&format=json&bucket=images"
       data = cached_data_from(url)
-      artist = data['response']['artist'] ? data['response']['artist'] : nil
+      artist = (data && data['response']['artist']) ? data['response']['artist'] : nil
       if artist
         artist['image'] = artist['images'].any? ? artist['images'].first['url'] : nil
         artist['artist_name'] = artist['name']
@@ -52,14 +71,21 @@ module Kantas
       id = "musicbrainz:artist:#{mbid}"
       url = "http://developer.echonest.com/api/v4/artist/images?api_key=#{Kantas.key('echonest')}&id=#{id}&format=json&results=1&start=0&license=unknown"
       data = cached_data_from(url)
-      data['response']['images'] && data['response']['images'].any? ? data['response']['images'].first['url'] : 'http://www.songkick.com/images//default_images/col2/default-artist.png'
+      data && data['response']['images'] && data['response']['images'].any? ? data['response']['images'].first['url'] : 'http://www.songkick.com/images//default_images/col2/default-artist.png'
     end
 
     def top_tracks(mbid)
-      id = "musicbrainz:artist:#{mbid}"
-      url = "http://developer.echonest.com/api/v4/artist/songs?api_key=#{Kantas.key('echonest')}&id=#{id}&format=json&start=0&results=10"
-      data = cached_data_from(url)['response']['songs'] || []
-      data.uniq {|d| d["title"]}
+      id   = "musicbrainz:artist:#{mbid}"
+      url  = "http://developer.echonest.com/api/v4/artist/songs?api_key=#{Kantas.key('echonest')}&id=#{id}&format=json&start=0&results=20"
+      data = cached_data_from(url)
+      data = data ? data['response']['songs'] : []
+      names = data.map {|t| t["title"]}
+
+      url  = "http://ws.audioscrobbler.com/2.0/?method=artist.gettoptracks&mbid=#{mbid}&api_key=#{Kantas.key('lastfm')}&format=json"
+      data = cached_data_from(url)['toptracks']['track'] || []
+      names += data.map {|t| t['name']}
+
+      names.uniq
     end
 
     def lyrics(artist_mbid, track_name)
@@ -98,6 +124,21 @@ module Kantas
       data['message']['body']['subtitle']
     end
 
+    def lyrics_with_time_by_track_id(track_id)
+      response = subtitle_by_track_id(track_id)
+      return unless response
+      lyrics_with_time = response['subtitle_body'].split("\n").map do |l|
+        str_time, lyrics = l.split(']')
+        unless lyrics.strip == ''
+          str_time.gsub!('[', '')
+          time  = Time.strptime(str_time, '%M:%S.%L')
+          time = time.min * 60.0 + time.sec
+          [time, lyrics]
+        end
+      end.compact
+      [response, lyrics_with_time]
+    end
+
     def track_by_id(track_id)
       key = Kantas.key('musixmatch')
       url = "http://api.musixmatch.com/ws/1.1/track.get?track_id=#{CGI.escape(track_id.to_s)}&apikey=#{key}"
@@ -107,15 +148,15 @@ module Kantas
       return data['message']['body']['track']
     end
 
-    def lyrics_with_blanks(lyrics_body)
+    def lyrics_with_blanks(lyrics_body, min_word_length: 1)
       sentences = lyrics_body.split("\n")
-      lines = (0..(sentences.size-1)).to_a.shuffle.first(sentences.size/2)
+      lines = pick_lines(sentences, (sentences.size/2))
       removed_words = {}
       removed_lyrics = []
       sentences.each_with_index do |line, i|
         words = line.split(' ')
         if lines.include?(i)
-          index, word_tuple = pick_word(words)
+          index, word_tuple = pick_word(words, min_word_length: min_word_length)
           if index
             removed_words[i] ||= {}
             removed_words[i][index] = word_tuple
@@ -132,7 +173,11 @@ module Kantas
       {'lyrics_body' => removed_lyrics, 'removed_words' => removed_words}
     end
 
-    def pick_word(words)
+    def pick_lines(sentences, size)
+      (0..(sentences.size-1)).to_a.shuffle.first(size)
+    end
+
+    def pick_word(words, min_word_length: 1)
       return nil if words.size < 2
       word_picked = nil
       index       = nil
@@ -140,8 +185,8 @@ module Kantas
       while !word_picked && checked.size < words.size
         index        = get_word_index(words)
         checked    << index
-        cleaned_word = words[index].gsub(/["'!\.,-]/i, '').downcase
-        unless ['oh', 'ah', 'uh', 'e'].include?(cleaned_word.squeeze)
+        cleaned_word = words[index].gsub(/[()&$#!\[\]{}"'\.,-]/i, '').downcase
+        if cleaned_word.size >= min_word_length && !%w(oh ah uh hm).include?(cleaned_word.squeeze)
           word_picked = [cleaned_word, words[index]]
         else
           index = word_picked = nil

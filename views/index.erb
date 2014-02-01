@@ -1,15 +1,20 @@
 <div class="row-fluid">
-  <h2>Find bands</h2>
   <form method="get" action="/bands" class="navbar-form pull-left">
+    <h3>I'm learning
     <select name="language">
       <option value="">Select a language</option>
       <% @languages.each do |ln, value|  %>
         <option value=<%= ln %> <%= params[:language] == ln ? 'selected=selected' : '' %>><%= value['name'] %></option>
       <% end %>
     </select>
-
+    </h3>
+    <h3>with
     <input name="genre" type="text" placeholder="Genre (optional)" value="<%= params[:genre] %>">
+    </h3>
+    <h3>or
 
-    <input type="submit" value="Search">
+    <input name="artist_name" type="text" placeholder="Artist name" value="<%= params[:artist_name] %>">
+    </h3>
+    <input type="submit" value="Search" class="btn">
   </form>
 </div>

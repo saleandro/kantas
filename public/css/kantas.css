@@ -60,6 +60,13 @@ input.error {
   border: 1px solid red;
 }
 
+.game-word {
+  font-size: 64px;
+  margin-top: 32px;
+  margin-bottom: 84px;
+  text-align: center;
+}
+
 span.success {
   color: #009966;
   font-weight: bold;
@@ -87,6 +94,16 @@ footer {
 
 p.highlight {
   font-weight: bold;
+}
+
+p.highlight-error {
+  font-weight: bold;
+  color: red;
+}
+
+p.highlight-success {
+  font-weight: bold;
+  color: #009966;
 }
 
 div#player {
