@@ -21,15 +21,19 @@ module ApiAccess
           else
             stored_data = data = data_from(url)
         end
-        DataStore.set(url, stored_data)
+        if stored_data && stored_data != ''
+          DataStore.set(url, stored_data)
+        end
       rescue NotFound
         return nil
       end
     else
-      if data != ''
-        if format==:json
-          data = JSON.parse(data)
+      if data && data != ''
+        if format == :json
+          data = parse_json(data)
         end
+      else
+        data = nil
       end
     end
     data
@@ -56,8 +60,15 @@ module ApiAccess
   end
 
   def json_from(url)
-    data = data_from(url)
-    JSON.parse(data)
+    data_str = data_from(url)
+    return parse_json(data_str)
+  end
+
+  def parse_json(data_str)
+    data = JSON.parse(data_str)
+    # musixmatch api doesn't return http error status codes :(
+    data = nil if data['message'] && data['message']['header'] && data['message']['header']['status_code'].to_i != 200
+    data
   end
 
   def data_from(url)

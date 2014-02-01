@@ -50,16 +50,19 @@ get '/bands/:mbid/tracks/:track_id' do
   @lyrics_with_time = nil
   if track['has_subtitles'] == 1
     response = Kantas.subtitle_by_track_id(params['track_id'])
-    @lyrics_with_time = response['subtitle_body'].split("\n").map do |l|
-      str_time, lyrics = l.split(']')
-      str_time.gsub!('[', '')
-      time  = Time.strptime(str_time, '%M:%S.%L')
-      time = time.min * 60.0 + time.sec
-      [time, lyrics]
-    end
+    if response
+      @lyrics_with_time = response['subtitle_body'].split("\n").map do |l|
+        str_time, lyrics = l.split(']')
+        str_time.gsub!('[', '')
+        time  = Time.strptime(str_time, '%M:%S.%L')
+        time = time.min * 60.0 + time.sec
+        [time, lyrics]
+      end
 
-    lyrics = @lyrics_with_time.map{|i| i[1]}.join("\n")
-  else
+      lyrics = @lyrics_with_time.map{|i| i[1]}.join("\n")
+    end
+  end
+  unless @lyrics_with_time
     response = Kantas.lyrics_by_track_id(params['track_id'])
     lyrics = response['lyrics_body']
   end

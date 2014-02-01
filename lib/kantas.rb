@@ -90,7 +90,7 @@ module Kantas
       url = "http://api.musixmatch.com/ws/1.1/track.subtitle.get?track_id=#{CGI.escape(track_id.to_s)}&apikey=#{key}"
       data = cached_data_from(url)
 
-      return nil unless data['message'] && data['message']['body']
+      return nil unless data && data['message'] && data['message']['body']
       data['message']['body']['subtitle']
     end
 
