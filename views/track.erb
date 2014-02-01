@@ -15,7 +15,7 @@
             <p <% if @lyrics_with_time %>class="lyrics-with-time" data-time="<%=  @lyrics_with_time[i][0] %>"<% end %>>
             <% line.each_with_index do |word, j|
               if word == '__BLANK__' %>
-                <input type="text" placeholder="" name="word[<%= i %>][<%= j %>]" id="word-<%= i %>-<%= j %>" data-value="<%= @lyrics_with_blanks['removed_words'][i][j] %>" value="">
+                <input type="text" placeholder="" autocomplete="off" name="word[<%= i %>][<%= j %>]" id="word-<%= i %>-<%= j %>" data-value="<%=h @lyrics_with_blanks['removed_words'][i][j].first %>" data-show="<%=h @lyrics_with_blanks['removed_words'][i][j].last %>" value="">
                 <script type="text/javascript">
                   $(document).ready(function() {
                     $('#word-<%= i %>-<%= j %>').keyup(function(event) {
@@ -30,6 +30,7 @@
             </p>
           <% end %>
         </div>
+        <% unless @lyrics_with_time %><p class="warning">Sorry, we don’t have the complete lyrics for this song.</p><% end %>
         <img src="<%= @track['pixel_tracking_url'] %>">
         <p class="copy"><%= @track['lyrics_copyright'] %></p>
       </div>

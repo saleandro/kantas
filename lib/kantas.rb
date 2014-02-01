@@ -1,5 +1,3 @@
-# -*- encoding : utf-8 -*-
-
 require 'cgi'
 require 'hpricot'
 require 'active_support'
@@ -61,13 +59,14 @@ module Kantas
       id = "musicbrainz:artist:#{mbid}"
       url = "http://developer.echonest.com/api/v4/artist/songs?api_key=#{Kantas.key('echonest')}&id=#{id}&format=json&start=0&results=10"
       data = cached_data_from(url)['response']['songs'] || []
+      data.uniq {|d| d["title"]}
     end
 
     def lyrics(artist_mbid, track_name)
       key = Kantas.key('musixmatch')
       url = "http://api.musixmatch.com/ws/1.1/track.search?q=#{CGI.escape(track_name)}&f_has_lyrics=1&f_artist_mbid=#{artist_mbid}&apikey=#{key}"
       data = cached_data_from(url)
-      return nil unless data['message'] && data['message']['body']['track_list'].any?
+      return nil unless data && data['message'] && data['message']['body']['track_list'].any?
       track = data['message']['body']['track_list'].first['track']
       track_id = track['track_id']
 
@@ -82,7 +81,12 @@ module Kantas
       data = cached_data_from(url)
 
       return nil unless data['message'] && data['message']['body']
-      return data['message']['body']['lyrics']
+      lyrics_hash = data['message']['body']['lyrics']
+      raw_lyrics = lyrics_hash['lyrics_body'].split("\n")
+      raw_lyrics.reject! {|l| l =~ /NOT for Commercial use/i}
+      raw_lyrics = raw_lyrics.join("\n")
+      lyrics_hash['lyrics_body'] = raw_lyrics
+      lyrics_hash
     end
 
     def subtitle_by_track_id(track_id)
@@ -109,23 +113,45 @@ module Kantas
       removed_words = {}
       removed_lyrics = []
       sentences.each_with_index do |line, i|
+        words = line.split(' ')
         if lines.include?(i)
-          words = line.split(' ')
-          if words.size < 2
+          index, word_tuple = pick_word(words)
+          if index
+            removed_words[i] ||= {}
+            removed_words[i][index] = word_tuple
+            words[index] = '__BLANK__'
             removed_lyrics << words
           else
-            j = (0..(words.size-1)).to_a.shuffle.first
-            removed_words[i] ||= {}
-            removed_words[i][j] = words[j]
-            words[j] = '__BLANK__'
             removed_lyrics << words
           end
         else
-          removed_lyrics << line.split(' ')
+          removed_lyrics << words
         end
       end
 
       {'lyrics_body' => removed_lyrics, 'removed_words' => removed_words}
+    end
+
+    def pick_word(words)
+      return nil if words.size < 2
+      word_picked = nil
+      index       = nil
+      checked     = []
+      while !word_picked && checked.size < words.size
+        index        = get_word_index(words)
+        checked    << index
+        cleaned_word = words[index].gsub(/["'!\.,-]/i, '').downcase
+        unless ['oh', 'ah', 'uh', 'e'].include?(cleaned_word.squeeze)
+          word_picked = [cleaned_word, words[index]]
+        else
+          index = word_picked = nil
+        end
+      end
+      return [index, word_picked]
+    end
+
+    def get_word_index(words)
+      (0..(words.size-1)).to_a.shuffle.first
     end
   end
 end
