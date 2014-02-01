@@ -3,7 +3,7 @@ var Kantas = {
     var el = $('#word-'+i+'-'+j);
     if (el.val().toLowerCase().replace(/[-.,()&$#!\[\]{}"']/, '') == el.attr('data-value').toLowerCase().replace(/[-.,()&$#!\[\]{}"']/, '')) {
       var next = $(':input:eq(' + ($(":input").index(el) + 1) + ")");
-      el.replaceWith(el.attr('data-value'));
+      el.replaceWith("<span class='success'>"+el.attr('data-show')+'</span>');
       if ($('input').length == 0) {
         $('.alert-success').show();
       } else {
@@ -24,7 +24,7 @@ var Kantas = {
     var track = window.tomahkAPI.Track(title, artist, {
       width:width,
       height:height,
-      disabledResolvers: [  ],
+      disabledResolvers: [ 'spotify' ],
       handlers: {
         onloaded: function() {
         },
@@ -35,21 +35,21 @@ var Kantas = {
         onresolved: function(resolver, result) {
         },
         ontimeupdate: function(timeupdate) {
-          // if (timeupdate['currentTime'] > 0) {
-          //   for (var i=0; i < lyrics.length; i++) {
-          //     var el = $(lyrics[i]);
-          //     var time = parseFloat(el.attr('data-time'));
-          //     console.log("time:"+ time + " <=  curTime:"+timeupdate['currentTime'] + ">= lastTIme:"+lastTime);
-          //     if ((time <=  timeupdate['currentTime']) && (time >= lastTime)) {
-          //       if (i > 0) {
-          //         $(lyrics[i-1]).removeClass('highlight');
-          //       }
-          //       lastTime = timeupdate['currentTime'];
-          //       el.addClass('highlight');
-          //       break;
-          //     }
-          //   }
-          // }
+          if (timeupdate['currentTime'] > 0) {
+             for (var i=0; i < lyrics.length; i++) {
+               var el = $(lyrics[i]);
+               var time = parseFloat(el.attr('data-time'));
+//               console.log("time:"+ time + " <=  curTime:"+timeupdate['currentTime'] + ">= lastTIme:"+lastTime);
+               if ((time <=  timeupdate['currentTime']) && (time >= lastTime)) {
+                 if (i > 0) {
+                   $(lyrics[i-1]).removeClass('highlight');
+                 }
+                 lastTime = timeupdate['currentTime'];
+                 el.addClass('highlight');
+                 break;
+               }
+             }
+          }
         }
       }
     });

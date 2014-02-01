@@ -50,9 +50,19 @@ a.artist-image img {
   font-size: 11px;
   text-align: right;
 }
+.warning {
+  font-size: 12px;
+  color: orange;
+  font-weight: bold;
+}
 
 input.error {
   border: 1px solid red;
+}
+
+span.success {
+  color: #009966;
+  font-weight: bold;
 }
 
 a, a:hover {
@@ -83,7 +93,6 @@ div#player {
   width: 250px;
   height: 250px;
   margin-bottom: 20px;
-
 }
 
 
