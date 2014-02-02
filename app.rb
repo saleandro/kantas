@@ -29,6 +29,8 @@ get '/bands' do
     redirect '/'
   end
 
+  @title = "Learn #{Kantas.languages[params['language']]['name']}"
+
   if params['artist_name'] && params['artist_name'].strip != ''
     countries =  Kantas.languages[params['language']]['countries']
     @bands = Kantas.bands_by_name(params['artist_name'], countries)
@@ -36,6 +38,7 @@ get '/bands' do
       redirect "/bands/#{@bands.first['mbid']}/tracks?language=#{params['language']}"
     end
   else
+    @title += " with #{params['genre']} bands" if params['genre'] && params['genre'] != ''
     countries =  Kantas.languages[params['language']]['countries']
     @bands = []
     countries.each do |country|
@@ -43,6 +46,7 @@ get '/bands' do
     end
     @bands = @bands.shuffle.first(20)
   end
+
   erb :bands
 end
 
@@ -53,6 +57,7 @@ get '/bands/:mbid/tracks' do
 
   @language_name = Kantas.languages[params['language']]['name']
   @artist = Kantas.artist(params['mbid'])
+  @title = "Learn #{@language_name} with #{@artist['name']}"
   tracks =  Kantas.top_tracks(params['mbid']).first(40)
   tracks_with_lyrics = []
   tracks.each do |track_title|
@@ -75,7 +80,6 @@ get '/bands/:mbid/tracks/:track_id' do
   end
 
   @language_name = Kantas.languages[params['language']]['name']
-
   track = Kantas.track_by_id(params['track_id'])
 
   @lyrics_with_time = nil
@@ -90,6 +94,7 @@ get '/bands/:mbid/tracks/:track_id' do
   end
   @track = track.merge(response)
   @lyrics_with_blanks = Kantas.lyrics_with_blanks(lyrics)
+  @title = "Learn #{@language_name} with #{@track['artist_name']}"
 
   erb :track
 end
@@ -132,8 +137,8 @@ get '/bands/:mbid/tracks/:track_id/game' do
 
     puts @words_with_times.inspect
     @play_game = !!lyrics_with_time
-
     @track = track.merge(response)
+    @title = "Learn #{@language_name} with #{@track['artist_name']}"
   end
 
   erb :game
