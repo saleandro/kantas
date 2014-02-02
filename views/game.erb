@@ -4,9 +4,7 @@
     KantasHearWord.addWord('<%= word %>', <%= times %>);
   <% end %>
     KantasHearWord.showWord();
-
     var space = false;
-
     $(document).keyup(function(evt) {
       if (evt.keyCode == 32) {
         space = false;
@@ -19,7 +17,6 @@
     });
   });
 </script>
-
 
 <h2 class="artist-header">
   <img src="<%= @track['album_coverart_350x350'] %>" width="248" height="248" align="left">

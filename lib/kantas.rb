@@ -168,6 +168,19 @@ module Kantas
       [response, lyrics_with_time]
     end
 
+    def game_words(lyrics)
+      lyrics_with_blanks = Kantas.lyrics_with_blanks(lyrics, min_word_length: 4, sentences_size: lyrics.size)
+      picked_words = []
+      lyrics_with_blanks['lyrics_body'].each_with_index do |line, i|
+        line.each_with_index do |word, j|
+          if word == '__BLANK__'
+            picked_words << lyrics_with_blanks['removed_words'][i][j].first
+          end
+        end
+      end
+      return picked_words
+    end
+
     def track_by_id(track_id)
       key = Kantas.key('musixmatch')
       url = "http://api.musixmatch.com/ws/1.1/track.get?track_id=#{CGI.escape(track_id.to_s)}&apikey=#{key}"
@@ -177,9 +190,10 @@ module Kantas
       return data['message']['body']['track']
     end
 
-    def lyrics_with_blanks(lyrics_body, min_word_length: 1)
+    def lyrics_with_blanks(lyrics_body, min_word_length: 1, sentences_size: nil)
       sentences = lyrics_body.split("\n")
-      lines = pick_lines(sentences, (sentences.size/2))
+      sentences_size = (sentences.size/2) unless sentences_size
+      lines = pick_lines(sentences, sentences_size)
       removed_words = {}
       removed_lyrics = []
       sentences.each_with_index do |line, i|
@@ -214,7 +228,7 @@ module Kantas
       while !word_picked && checked.size < words.size
         index        = get_word_index(words)
         checked    << index
-        cleaned_word = UnicodeUtils.downcase(words[index].gsub(/[()&$#!\[\]\*{}"'\.,-]/i, ''))
+        cleaned_word = clean_word(words[index])
         if cleaned_word.size >= min_word_length && !%w(oh ah uh hm).include?(cleaned_word.squeeze)
           word_picked = [cleaned_word, words[index]]
         else
@@ -222,6 +236,10 @@ module Kantas
         end
       end
       return [index, word_picked]
+    end
+
+    def clean_word(word)
+      UnicodeUtils.downcase(word.gsub(/[()&$#!\[\]\*{}"'\.,-]/i, ''))
     end
 
     def get_word_index(words)

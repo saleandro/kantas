@@ -129,46 +129,46 @@ var KantasCompleteLyrics = {
 var KantasHearWord = {
   words: [],
   correct: false,
+  word_index: 0,
 
   addWord: function(word, times) {
-    this.words.push([word, times]);
+    KantasHearWord.words.push([word, times]);
   },
 
   showWord: function() {
-    var word_and_time = this.words[0];
-    this.game_times = word_and_time[1];
-    $('.game-word').html(word_and_time[0]);
+    var word_and_time = KantasHearWord.words[KantasHearWord.word_index];
+    if (word_and_time !== undefined) {
+      KantasHearWord.game_times = word_and_time[1];
+      $('.game-word').html(word_and_time[0]);
+    } else {
+      $('.game-word').html('Game over');
+    }
   },
 
   renderTrack: function(artist, title) {
     var width = 250;
     var height = 250;
-    var times = this.game_times;
-    var lastTime = 0;
     var track = window.tomahkAPI.Track(title, artist, {
       width:width,
       height:height,
-      disabledResolvers: [ 'spotify' ],
+      disabledResolvers: [  ],
       handlers: {
         ontimeupdate: function(timeupdate) {
           if (timeupdate['currentTime'] > 0) {
             global_time = timeupdate['currentTime'];
-//            for (var i = 0; i < times.length; i++) {
-            var i = 0;
-             var time = times[i][0];
-             var nextTime = times[i][1];
-             if (timeupdate['currentTime'] >= time && timeupdate['currentTime'] <= nextTime) {
-               KantasHearWord.correct = true;
-               console.log(KantasHearWord.correct + " time:"+time + " curtime"+ timeupdate['currentTime']);
-//               break;
-             } else {
-               if (KantasHearWord.correct) {
-                 console.log('not any more');
-               }
-               KantasHearWord.correct = false;
-             }
-
-//            }
+            var time = KantasHearWord.game_times[0];
+            var nextTime = KantasHearWord.game_times[1];
+//            console.log(global_time+">="+time+" and " + global_time + '<=' + nextTime);
+            if (timeupdate['currentTime'] >= time && timeupdate['currentTime'] <= nextTime) {
+              KantasHearWord.correct = true;
+              console.log(KantasHearWord.correct + " time:" + time + " curtime" + timeupdate['currentTime']);
+            } else {
+              if (KantasHearWord.correct) {
+                console.log('not any more');
+                KantasHearWord.pickNextWord();
+              }
+              KantasHearWord.correct = false;
+            }
           }
         }
       }
@@ -178,23 +178,29 @@ var KantasHearWord = {
   },
 
   checkResponse: function(event) {
-    if (this.answered) { return true }
-    console.log("Cur time"+ global_time + "corr:" + this.correct);
+    if (KantasHearWord.answered) { return true }
+    console.log("Cur time"+ global_time + "corr:" + KantasHearWord.correct);
     var el = $('.game-word');
-    this.answered = true;
-    if (this.correct) {
+    KantasHearWord.answered = true;
+    if (KantasHearWord.correct) {
       el.addClass('highlight-success');
     } else {
       el.addClass('highlight-error');
     }
-    setTimeout(this.removeClasses, 1000);
+    setTimeout(KantasHearWord.clearWord, 1000);
   },
 
-  removeClasses: function() {
+  clearWord: function() {
     KantasHearWord.answered = false;
     var el = $('.game-word');
     el.removeClass('highlight-error');
     el.removeClass('highlight-success');
+  },
+
+  pickNextWord: function() {
+    KantasHearWord.word_index += 1;
+    KantasHearWord.clearWord();
+    KantasHearWord.showWord();
   }
 
 };

@@ -34,7 +34,7 @@ get '/bands' do
   if params['artist_name'] && params['artist_name'].strip != ''
     countries =  Kantas.languages[params['language']]['countries']
     @bands = Kantas.bands_by_name(params['artist_name'], countries)
-    if @bands.size < 5
+    if @bands.any? && @bands.size < 5
       redirect "/bands/#{@bands.first['mbid']}/tracks?language=#{params['language']}"
     end
   else
@@ -57,6 +57,9 @@ get '/bands/:mbid/tracks' do
 
   @language_name = Kantas.languages[params['language']]['name']
   @artist = Kantas.artist(params['mbid'])
+  unless @artist
+    redirect "/bands?language=#{params['language']}"
+  end
   @title = "Learn #{@language_name} with #{@artist['name']}"
   tracks =  Kantas.top_tracks(params['mbid']).first(40)
   tracks_with_lyrics = []
@@ -106,37 +109,44 @@ get '/bands/:mbid/tracks/:track_id/game' do
 
   @language_name = Kantas.languages[params['language']]['name']
 
-  track = Kantas.track_by_id(params['track_id'])
+  @track = Kantas.track_by_id(params['track_id'])
+  @words_with_times = {}
 
   lyrics_with_time = nil
-  if track['has_subtitles'] == 1
-    lyrics_with_time.map{|i| i[1]}.join("\n") if lyrics_with_time
+  if @track['has_subtitles'] == 1
     response, lyrics_with_time = Kantas.lyrics_with_time_by_track_id(params['track_id'])
-    lyrics_with_blanks = Kantas.lyrics_with_blanks(lyrics_with_time.map{|i| i[1]}.join("\n"), min_word_length: 3)
+
+    game_words = Kantas.game_words(lyrics_with_time.map{|i| i[1]}.join("\n"))
+
+    words_and_time = {}
+    words_with_all_times = {}
+    lyrics_with_time.each_with_index do |line, i|
+      time, line = line.first, line.last
+      words = line.strip.split(' ').map {|s| Kantas.clean_word(s)}.select {|s| s && s != ''}
+      words.each_with_index do |word, j|
+        clean_word = Kantas.clean_word(word)
+        if game_words.include?(clean_word)
+          words_with_all_times[clean_word] ||= []
+          words_with_all_times[clean_word] << time
+          words_and_time[clean_word] ||= [(time + (j/2.0)), (time + j + 2)]
+        end
+      end
+    end
+
+    words_with_time_arr = words_and_time.sort_by {|s| s.last.first}
+    last_time = 0
     @words_with_times = {}
-    picked_words = []
-
-    lyrics_with_blanks['lyrics_body'].each_with_index do |line, i|
-      line.each_with_index do |word, j|
-        if word == '__BLANK__'
-          picked_words << lyrics_with_blanks['removed_words'][i][j].first
-        end
+    words_with_time_arr.each do |word, times|
+      if (times[0] - last_time) > 10
+        @words_with_times[word] = times
+        last_time = times[0]
       end
     end
 
-    lyrics_with_blanks['lyrics_body'].each_with_index do |line, i|
-      line.each_with_index do |word, j|
-        clean_word = lyrics_with_blanks['lyrics_body'][i][j]
-        if picked_words.include?(clean_word)
-          @words_with_times[clean_word] ||= []
-          @words_with_times[clean_word] << [(lyrics_with_time[i][0] + (j/2.0)), (lyrics_with_time[i][0] + j)]
-        end
-      end
-    end
+    puts "Picked words: #{@words_with_times.inspect}"
 
-    puts @words_with_times.inspect
     @play_game = !!lyrics_with_time
-    @track = track.merge(response)
+    @track = @track.merge(response)
     @title = "Learn #{@language_name} with #{@track['artist_name']}"
   end
 
