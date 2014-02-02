@@ -1,9 +1,5 @@
 <h2>Learning <a href="/bands?<%= escape_url(:language => params[:language], :genre => params[:genre]) %>"><%= @language_name %></a> with <a href="/bands/<%= params[:mbid] %>/tracks?<%= escape_url(:language => params[:language], :genre => params[:genre]) %>"><%= @track['artist_name'] %></a></h2>
 
-<div class="alert alert-success hidden">
-  <%= congrats_message(params[:language]) %>
-</div>
-
 <div class="row-fluid">
   <div class="span11">
     <h3>“<%= @track['track_name'] %>” from “<%= @track['album_name'] %>”</h3>
@@ -26,6 +22,9 @@
                     $('#word-<%= i %>-<%= j %>').keyup(function(event) {
                       KantasCompleteLyrics.checkResponse(<%= i.inspect %>, <%= j.inspect %>);
                     });
+                    $('#word-<%= i %>-<%= j %>').focusout(function(event) {
+                      KantasCompleteLyrics.addScore(<%= i.inspect %>, <%= j.inspect %>);
+                    });
                   });
                 </script>
               <% else %>
@@ -35,6 +34,15 @@
             </p>
           <% end %>
         </div>
+
+        <div id="score-board">
+          <div class="alert alert-success hidden">
+            <%= congrats_message(params[:language]) %>
+          </div>
+
+          Your score: <span id="score">0</span> points.
+        </div>
+
         <% unless @lyrics_with_time %><p class="warning">Sorry, we don’t have the complete lyrics information for this song.</p><% end %>
         <img src="<%= @track['pixel_tracking_url'] %>">
         <p class="copy"><%= @track['lyrics_copyright'] %></p>

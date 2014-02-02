@@ -1,9 +1,11 @@
 var KantasCompleteLyrics = {
+
   checkResponse: function(i, j) {
     var el = $('#word-'+i+'-'+j);
     if (el.val() == el.attr('data-value')) {
       var next = $(':input:eq(' + ($(":input").index(el) + 1) + ")");
-      el.replaceWith("<span class='success'>"+el.attr('data-show')+'</span>');
+      el.replaceWith('<span class="success" id="#word-'+i+'-'+j+'">'+el.attr('data-show')+'</span>');
+      this.addSuccessScore(el);
       if ($('input').length == 0) {
         $('.alert-success').show();
       } else {
@@ -16,7 +18,42 @@ var KantasCompleteLyrics = {
     }
   },
 
+  supportsLocalStorage: function() {
+    try {
+      return 'localStorage' in window && window['localStorage'] !== null;
+    } catch (e) {
+      return false;
+    }
+  },
+
+  addScore: function(i, j) {
+    if (!this.supportsLocalStorage()) { return false; }
+
+    var el = $('#word-'+i+'-'+j);
+    if (el.hasClass('error')) {
+      var score = parseInt(localStorage['nikantas-score']);
+      score = score - 1;
+      localStorage['nikantas-score'] = score;
+      this.updateScoreBoard();
+    }
+  },
+
+  addSuccessScore: function(el) {
+    if (!this.supportsLocalStorage()) { return false; }
+
+    var score = parseInt(localStorage['nikantas-score']);
+    score = score + 5;
+    localStorage['nikantas-score'] = score;
+    this.updateScoreBoard();
+  },
+
+  updateScoreBoard: function() {
+    var el = $('#score');
+    el.html(localStorage['nikantas-score']);
+  },
+
   renderTrack: function(artist, title) {
+    localStorage['nikantas-score'] = 0;
     var width = 250;
     var height = 250;
     var lyrics = $('p.lyrics-with-time');

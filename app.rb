@@ -12,17 +12,16 @@ get '/bands' do
     redirect '/'
   end
 
-  if params['artist_name']
+  if params['artist_name'].strip != ''
     countries =  Kantas.languages[params['language']]['countries']
-    bands = Kantas.bands_by_name(params['artist_name'], countries)
-    @bands = bands.flatten.compact.first(18)
+    @bands = Kantas.bands_by_name(params['artist_name'], countries)
   else
     countries =  Kantas.languages[params['language']]['countries']
-    bands = []
+    @bands = []
     countries.each do |country|
-      bands << Kantas.bands_in_country(country, params['genre'])
+      @bands += Kantas.bands_in_country(country, params['genre'], 20)
     end
-    @bands = bands.flatten.compact.shuffle.first(18)
+    @bands = @bands.shuffle.first(20)
   end
   erb :bands
 end
@@ -34,11 +33,17 @@ get '/bands/:mbid/tracks' do
 
   @language_name = Kantas.languages[params['language']]['name']
   @artist = Kantas.artist(params['mbid'])
-  tracks =  Kantas.top_tracks(params['mbid'])
+  tracks =  Kantas.top_tracks(params['mbid']).first(20)
   tracks_with_lyrics = []
   tracks.each do |track_title|
     lyrics = Kantas.lyrics(params['mbid'], track_title)
-    tracks_with_lyrics << lyrics if lyrics && lyrics['lyrics_language'] == params['language']
+    if lyrics && lyrics['lyrics_language'] == params['language']
+      #echonest_track_id = Kantas.track_id(@artist['name'], track_title)
+      #if echonest_track_id
+      #  puts Kantas.track_audio_summary(echonest_track_id)
+      #end
+      tracks_with_lyrics << lyrics
+    end
   end
   @tracks = tracks_with_lyrics.uniq {|t| t['track_id']}
   erb :tracks

@@ -1,6 +1,7 @@
 require 'cgi'
 require 'hpricot'
 require 'active_support'
+require "unicode_utils/downcase"
 require File.dirname(__FILE__) + '/api_access'
 
 module Kantas
@@ -16,12 +17,18 @@ module Kantas
        'en' => {'countries' => Set.new(['us', 'gb', 'au', 'ca', 'nz']), 'name' => 'English', 'message' => 'Great job!'}}
     end
 
-    def bands_in_country(country, genre=nil)
+    def bands_in_country(country, genre=nil, limit=nil)
       query = "country:#{country}"
       query << " AND tag:#{genre}" if !genre.nil? && genre.strip != ''
       url = "http://www.musicbrainz.org/ws/2/artist/?query=#{CGI.escape query}&limit=50"
       data = cached_data_from(url, :raw)
-      xml = Hpricot::XML(data)
+      begin
+        xml = Hpricot::XML(data)
+      rescue => e
+        puts e.inspect
+        puts data.inspect
+        return []
+      end
       artists = []
       (xml/"artist-list/artist").each do |a|
         artist = {}
@@ -29,8 +36,14 @@ module Kantas
         artist['name'] = a.search('/name').inner_html
         artist['country'] = a.search('/country').inner_html
         artist['tags'] = a.search('/tag-list/tag').map {|t| t.search('/name').inner_html}
-        artist['image'] = artist_image(artist['mbid'])
         artists << artist
+      end
+      artists = artists.flatten.compact
+      if limit
+        artists = artists.shuffle.first(limit)
+      end
+      artists.each do |artist|
+        artist['image'] = artist_image(artist['mbid'])
       end
       artists
     end
@@ -38,7 +51,7 @@ module Kantas
     def bands_by_name(name, countries)
       return [] unless name
       query = "artist:#{name}"
-      url = "http://musicbrainz.org/ws/2/artist/?query=#{CGI.escape query}&limit=50"
+      url = "http://musicbrainz.org/ws/2/artist/?query=#{CGI.escape query}&limit=10"
       data = cached_data_from(url, :raw)
       xml = Hpricot::XML(data)
       artists = []
@@ -51,7 +64,7 @@ module Kantas
         artist['image'] = artist_image(artist['mbid'])
         artists << artist
       end
-      artists.select {|b| countries.include?(b['country'])}
+      artists.flatten.compact.select {|b| countries.include?(b['country'])}
     end
 
     def artist(mbid)
@@ -86,6 +99,22 @@ module Kantas
       names += data.map {|t| t['name']}
 
       names.uniq
+    end
+
+    def track_id(artist_name, track_name)
+      return {} unless artist_name && track_name
+      url = "http://developer.echonest.com/api/v4/song/search?api_key=#{Kantas.key('echonest')}&format=json&results=1&artist=#{CGI.escape artist_name}&title=#{CGI.escape track_name}&bucket=tracks&bucket=id:spotify-WW"
+      echonest_track_ids = cached_data_from(url)
+      song = echonest_track_ids && echonest_track_ids['response'] && echonest_track_ids['response']['songs'] ? echonest_track_ids['response']['songs'].first : nil
+      song && song['tracks'].any? ? song['tracks'].first['id'] : nil
+    end
+
+    def track_audio_summary(echonest_track_id)
+      return {} unless echonest_track_id
+      url = "http://developer.echonest.com/api/v4/track/profile?api_key=#{Kantas.key('echonest')}&format=json&id=#{echonest_track_id}&bucket=audio_summary"
+      response = cached_data_from(url)
+      audio_summary = response && response['response'] && response['response']['track'] ? response['response']['track']['audio_summary'] : {}
+      return audio_summary
     end
 
     def lyrics(artist_mbid, track_name)
@@ -185,7 +214,7 @@ module Kantas
       while !word_picked && checked.size < words.size
         index        = get_word_index(words)
         checked    << index
-        cleaned_word = words[index].gsub(/[()&$#!\[\]{}"'\.,-]/i, '').downcase
+        cleaned_word = UnicodeUtils.downcase(words[index].gsub(/[()&$#!\[\]{}"'\.,-]/i, ''))
         if cleaned_word.size >= min_word_length && !%w(oh ah uh hm).include?(cleaned_word.squeeze)
           word_picked = [cleaned_word, words[index]]
         else

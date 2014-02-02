@@ -22,6 +22,7 @@ GEM
       rack-protection (~> 1.2)
       tilt (~> 1.3, >= 1.3.3)
     tilt (1.3.3)
+    unicode_utils (1.4.0)
     unicorn (4.8.1)
       kgio (~> 2.6)
       rack
@@ -40,4 +41,5 @@ DEPENDENCIES
   redis
   sequel
   sinatra
+  unicode_utils
   unicorn
