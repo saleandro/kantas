@@ -20,11 +20,12 @@
   });
 </script>
 
-<h2>Learning
-  <a href="/bands?<%= escape_url(:language => params[:language], :genre => params[:genre]) %>"><%= @language_name %></a>
-  with
-  <a href="/bands/<%= params[:mbid] %>/tracks?<%= escape_url(:language => params[:language], :genre => params[:genre]) %>"><%= @track['artist_name'] %></a>
+
+<h2 class="artist-header">
+  <img src="<%= @track['album_coverart_350x350'] %>" width="248" height="248" align="left">
+  <%= I18n.t(:learning, :lang_url => "/bands?#{escape_url(:language => params[:language], :genre => params[:genre])}", :artist_name =>  @track['artist_name'], :artist_url => "/bands/#{params[:mbid]}/tracks?#{escape_url(:language => params[:language], :genre => params[:genre])}") %>
 </h2>
+<br>
 
 <div class="alert alert-success hidden">
   Well done!

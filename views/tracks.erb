@@ -3,18 +3,26 @@
     <p class="notice">No lyrics :( </p>
     <p><a href="/bands?<%= escape_url(:language => params[:language], :genre => params[:genre]) %>">Choose another band</a></p>
   <% else %>
-  <h2>Learning <a href="/bands?<%= escape_url(:language => params[:language], :genre => params[:genre]) %>"><%= @language_name %></a> with <a href="/bands/<%= params[:mbid] %>/tracks?<%= escape_url(:language => params[:language], :genre => params[:genre]) %>"><%= @artist['artist_name'] %></a></h2>
-  <img class="thumbnail" src="<%= @artist['image'] %>" width="142" height="142" align="right">
+  <h2 class="artist-header" style="margin-bottom: 60px;">
+    <img src="<%= @artist['image'] %>" width="248" height="248" align="left">
+    <%= I18n.t(:learning, :lang_url => "/bands?#{escape_url(:language => params[:language], :genre => params[:genre])}", :artist_name => @artist['name'] , :artist_url => "/bands/#{params[:mbid]}/tracks?#{escape_url(:language => params[:language], :genre => params[:genre])}") %>
+  </h2>
+  <br>
   <% if @tracks.any?  %>
-    <ul class="tracks">
-      <% @tracks.each do |track| %>
+    <% @tracks.group_by {|t| t['album_name']}.each do |album_name, tracks| %>
+    <div class="album">
+      <img class="album-cover" src="<%= tracks.first['album_coverart_350x350'] %>" width="250" height="250" alt="<%= album_name %>" title="<%= album_name %>">
+      <ul class="tracks">
+        <% tracks.each do |track| %>
         <li>
           <a class="lyrics-link" data-lyrics="<%= track['track_id'] %>" href="/bands/<%= @artist['mbid'] %>/tracks/<%= track['track_id'] %>?<%= escape_url(:language => params[:language], :genre => params[:genre]) %>">
-            “<%= track['track_name'] %>” from “<%= track['album_name'] %>”
+            <%= track['track_name'] %>
           </a>
         </li>
-      <% end %>
-    </ul>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
   <% else %>
     <p class="notice">No lyrics :( </p>
     <p><a href="/bands?<%= escape_url(:language => params[:language], :genre => params[:genre]) %>">Choose another band</a></p>

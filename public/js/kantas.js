@@ -1,13 +1,19 @@
 var KantasCompleteLyrics = {
+  perfectScore: true,
+  perfectScoreMessage: '',
 
   checkResponse: function(i, j) {
     var el = $('#word-'+i+'-'+j);
-    if (el.val() == el.attr('data-value')) {
+    if (el.val().toLowerCase().replace(/[-.,()&$#!\[\]{}"']/, '') == el.attr('data-value')) {
       var next = $(':input:eq(' + ($(":input").index(el) + 1) + ")");
       el.replaceWith('<span class="success" id="#word-'+i+'-'+j+'">'+el.attr('data-show')+'</span>');
       this.addSuccessScore(el);
       if ($('input').length == 0) {
-        $('.alert-success').show();
+        var success = $('.alert-success');
+        if (this.perfectScore) {
+          success.html(success.html() + ' ' + this.perfectScoreMessage);
+        }
+        success.show();
       } else {
         next.focus();
       }
@@ -33,6 +39,7 @@ var KantasCompleteLyrics = {
     if (el.hasClass('error')) {
       var score = parseInt(localStorage['nikantas-score']);
       score = score - 1;
+      this.perfectScore = false;
       localStorage['nikantas-score'] = score;
       this.updateScoreBoard();
     }

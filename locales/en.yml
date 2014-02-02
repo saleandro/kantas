@@ -1,0 +1,6 @@
+---
+en:
+  success: 'Great job!'
+  perfect_score: 'Perfect game!'
+  score: 'Your score'
+  learning: 'Learning <a href="%{lang_url}">English</a> <br> with <a href="%{artist_url}">%{artist_name}</a>'

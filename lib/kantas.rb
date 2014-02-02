@@ -9,12 +9,12 @@ module Kantas
     include ApiAccess
 
     def languages
-      {'es' => {'countries' => Set.new(['es', 'mx', 'ar']), 'name' => 'Español', 'message' => '¡Muy Bien!'},
-       'pt' => {'countries' => Set.new(['pt', 'br']),       'name' => 'Português', 'message' => 'Parabéns!'},
-       'fr' => {'countries' => Set.new(['fr']), 'name' => 'Français', 'message' => 'Félicitations!'},
-       'it' => {'countries' => Set.new(['it']), 'name' => 'Italiano', 'message' => 'Ben Fatto!'},
-       'de' => {'countries' => Set.new(['de']), 'name' => 'Deutsch', 'message' => 'Gut gemacht!'},
-       'en' => {'countries' => Set.new(['us', 'gb', 'au', 'ca', 'nz']), 'name' => 'English', 'message' => 'Great job!'}}
+      {'es' => {'countries' => Set.new(['es', 'mx', 'ar']), 'name' => 'Español'},
+       'pt' => {'countries' => Set.new(['pt', 'br']),       'name' => 'Português'},
+       'fr' => {'countries' => Set.new(['fr']), 'name' => 'Français'},
+       'it' => {'countries' => Set.new(['it']), 'name' => 'Italiano'},
+       'de' => {'countries' => Set.new(['de']), 'name' => 'Deutsch'},
+       'en' => {'countries' => Set.new(['us', 'gb', 'au', 'ca', 'nz']), 'name' => 'English'}}
     end
 
     def bands_in_country(country, genre=nil, limit=nil)
@@ -84,7 +84,7 @@ module Kantas
       id = "musicbrainz:artist:#{mbid}"
       url = "http://developer.echonest.com/api/v4/artist/images?api_key=#{Kantas.key('echonest')}&id=#{id}&format=json&results=1&start=0&license=unknown"
       data = cached_data_from(url)
-      data && data['response']['images'] && data['response']['images'].any? ? data['response']['images'].first['url'] : 'http://www.songkick.com/images//default_images/col2/default-artist.png'
+      data && data['response']['images'] && data['response']['images'].any? ? data['response']['images'].first['url'] : 'http://www.songkick.com/images/default_images/col2/default-artist.png'
     end
 
     def top_tracks(mbid)

@@ -1,4 +1,4 @@
-<% if @bands.any?  %>
+<% if @bands.any? %>
 <ul class="bands media-grid">
   <% @bands.each do |band| %>
     <li><a class="artist-image" href="/bands/<%= band['mbid'] %>/tracks?<%= escape_url(:language => params[:language], :genre => params[:genre]) %>">

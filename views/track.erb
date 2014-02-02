@@ -1,4 +1,8 @@
-<h2>Learning <a href="/bands?<%= escape_url(:language => params[:language], :genre => params[:genre]) %>"><%= @language_name %></a> with <a href="/bands/<%= params[:mbid] %>/tracks?<%= escape_url(:language => params[:language], :genre => params[:genre]) %>"><%= @track['artist_name'] %></a></h2>
+<h2 class="artist-header">
+  <img src="<%= @track['album_coverart_100x100'] %>" width="100" height="100" align="left">
+  <%= I18n.t(:learning, :lang_url => "/bands?#{escape_url(:language => params[:language], :genre => params[:genre])}", :artist_name =>  @track['artist_name'], :artist_url => "/bands/#{params[:mbid]}/tracks?#{escape_url(:language => params[:language], :genre => params[:genre])}") %>
+</h2>
+<br>
 
 <div class="row-fluid">
   <div class="span11">
@@ -37,10 +41,10 @@
 
         <div id="score-board">
           <div class="alert alert-success hidden">
-            <%= congrats_message(params[:language]) %>
+            <%= I18n.t(:success) %>
           </div>
 
-          Your score: <span id="score">0</span> points.
+          <%= I18n.t(:score) %>: <span id="score">0</span>
         </div>
 
         <% unless @lyrics_with_time %><p class="warning">Sorry, we don’t have the complete lyrics information for this song.</p><% end %>
@@ -54,6 +58,7 @@
 <script src="http://toma.hk/api.js?v=1"></script>
 <script type="text/javascript">
   $(document).ready(function() {
+    KantasCompleteLyrics.perfectScoreMessage = '<%= I18n.t(:perfect_score) %>';
     KantasCompleteLyrics.renderTrack("<%= @track['artist_name'] %>", "<%= @track['track_name'] %>");
   });
 </script>

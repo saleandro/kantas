@@ -1,0 +1,6 @@
+---
+fr:
+  success: 'Félicitations!'
+  perfect_score: 'Jeu parfait!'
+  score: 'Score'
+  learning: 'Learning <a href="%{lang_url}">French</a> <br>  with <a href="%{artist_url}">%{artist_name}</a>'

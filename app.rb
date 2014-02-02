@@ -1,6 +1,23 @@
 require 'cgi'
 require 'sinatra'
+require 'i18n'
+require 'i18n/backend/fallbacks'
+
 require File.dirname(__FILE__) + '/lib/kantas'
+
+configure do
+  I18n::Backend::Simple.send(:include, I18n::Backend::Fallbacks)
+  I18n.load_path += Dir[File.join(settings.root, 'locales', '*.yml')]
+  I18n.backend.load_translations
+end
+
+before do
+  if params['language']
+    I18n.locale = params['language']
+  else
+    I18n.locale = 'en'
+  end
+end
 
 get '/' do
   @languages = Kantas.languages
@@ -12,9 +29,12 @@ get '/bands' do
     redirect '/'
   end
 
-  if params['artist_name'].strip != ''
+  if params['artist_name'] && params['artist_name'].strip != ''
     countries =  Kantas.languages[params['language']]['countries']
     @bands = Kantas.bands_by_name(params['artist_name'], countries)
+    if @bands.size < 5
+      redirect "/bands/#{@bands.first['mbid']}/tracks?language=#{params['language']}"
+    end
   else
     countries =  Kantas.languages[params['language']]['countries']
     @bands = []
@@ -33,7 +53,7 @@ get '/bands/:mbid/tracks' do
 
   @language_name = Kantas.languages[params['language']]['name']
   @artist = Kantas.artist(params['mbid'])
-  tracks =  Kantas.top_tracks(params['mbid']).first(20)
+  tracks =  Kantas.top_tracks(params['mbid']).first(40)
   tracks_with_lyrics = []
   tracks.each do |track_title|
     lyrics = Kantas.lyrics(params['mbid'], track_title)
@@ -125,10 +145,6 @@ helpers do
 
   def escape_url(params)
     params.map { |k,v| "#{CGI.escape k.to_s}=#{CGI.escape v.to_s}" }.join('&amp;')
-  end
-
-  def congrats_message(language)
-    Kantas.languages[language]['message']
   end
 end
 

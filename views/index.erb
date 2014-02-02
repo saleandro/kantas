@@ -1,20 +1,23 @@
 <div class="row-fluid">
   <form method="get" action="/bands" class="navbar-form pull-left">
-    <h3>I'm learning
-    <select name="language">
-      <option value="">Select a language</option>
-      <% @languages.each do |ln, value|  %>
-        <option value=<%= ln %> <%= params[:language] == ln ? 'selected=selected' : '' %>><%= value['name'] %></option>
-      <% end %>
-    </select>
-    </h3>
-    <h3>with
-    <input name="genre" type="text" placeholder="Genre (optional)" value="<%= params[:genre] %>">
-    </h3>
-    <h3>or
+    <div class="span6">
+      <h3>Learn<br>
+        <select name="language">
+          <option value="">Select a language</option>
+          <% @languages.each do |ln, value| %>
+            <option value=<%= ln %> <%= params[:language] == ln ? 'selected=selected' : '' %>><%= value['name'] %></option>
+          <% end %>
+        </select>
+      </h3>
+    </div>
+    <div class="span6">
+      <h3>by<br>
+        <input name="genre" type="text" placeholder="genre (optional)" value="<%= params[:genre] %>">
 
-    <input name="artist_name" type="text" placeholder="Artist name" value="<%= params[:artist_name] %>">
-    </h3>
-    <input type="submit" value="Search" class="btn">
+      <br>or with<br>
+        <input name="artist_name" type="text" placeholder="artist name (optional)" value="<%= params[:artist_name] %>">
+        <input type="submit" value="Search" class="btn">
+      </h3>
+    </div>
   </form>
 </div>

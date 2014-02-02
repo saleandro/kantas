@@ -1,0 +1,6 @@
+---
+de:
+  success: 'Gut gemacht!'
+  perfect_score: 'Perfekte Spiel!'
+  score: 'Score'
+  learning: 'Learning <a href="%{lang_url}">German</a> <br> with <a href="%{artist_url}">%{artist_name}</a>'

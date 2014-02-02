@@ -30,6 +30,10 @@ a.artist-image img {
   list-style: none;
 }
 
+.tracks {
+  margin: 0
+}
+
 .bands li {
   width: 242px;
   margin-bottom: 5px;
@@ -82,6 +86,7 @@ a.visited {
 
 footer {
   margin-bottom: 20px;
+  width: 25%;
 }
 
 .hidden {
@@ -112,7 +117,6 @@ p.highlight-success {
   margin-bottom: 20px;
 }
 
-
 #score-board {
   position: fixed;
   bottom: 0;
@@ -121,11 +125,39 @@ p.highlight-success {
   background-color: #007f54;
   z-index: 110;
   width: 50%;
-  padding: 10px;
+  padding: 20px;
   color: white;
   font-weight: bold;
 }
 
 #score {
   font-size: 22px;
+}
+
+.album-cover {
+  width: 250px;
+  height: 250px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.album {
+  display: inline-block;
+  margin-right: 15px;
+  margin-bottom: 15px;
+  vertical-align: top;
+  background-color: #f9f7f7;
+}
+
+.album li {
+  margin-left: 10px;
+}
+
+.artist-header {
+  display: inline-block;
+  margin-bottom: 20px;
+  width: 100%;
+}
+.artist-header img {
+  margin-right: 20px;
 }
