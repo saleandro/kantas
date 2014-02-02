@@ -141,7 +141,7 @@ var KantasHearWord = {
       KantasHearWord.game_word.html(word_and_time[0]);
       KantasHearWord.game_times = word_and_time[1];
     } else {
-      KantasHearWord.game_word.html('Game over');
+      KantasHearWord.game_word.html(':)');
     }
   },
 
