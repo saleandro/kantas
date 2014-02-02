@@ -124,13 +124,12 @@ get '/bands/:mbid/tracks/:track_id/game' do
       end
     end
 
-    puts lyrics_with_time.inspect
     lyrics_with_blanks['lyrics_body'].each_with_index do |line, i|
       line.each_with_index do |word, j|
         clean_word = lyrics_with_blanks['lyrics_body'][i][j]
         if picked_words.include?(clean_word)
           @words_with_times[clean_word] ||= []
-          @words_with_times[clean_word] << [(lyrics_with_time[i][0] + j + 1), (lyrics_with_time[i][0] + j + 1.5)]
+          @words_with_times[clean_word] << [(lyrics_with_time[i][0] + (j/2.0)), (lyrics_with_time[i][0] + j)]
         end
       end
     end

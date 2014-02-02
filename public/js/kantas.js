@@ -1,3 +1,4 @@
+var global_time = 0;
 var KantasCompleteLyrics = {
   perfectScore: true,
   perfectScoreMessage: '',
@@ -151,19 +152,20 @@ var KantasHearWord = {
       handlers: {
         ontimeupdate: function(timeupdate) {
           if (timeupdate['currentTime'] > 0) {
+            global_time = timeupdate['currentTime'];
 //            for (var i = 0; i < times.length; i++) {
             var i = 0;
              var time = times[i][0];
              var nextTime = times[i][1];
              if (timeupdate['currentTime'] >= time && timeupdate['currentTime'] <= nextTime) {
-               this.correct = true;
-               console.log(this.correct + " time:"+time + " curtime"+ timeupdate['currentTime']);
+               KantasHearWord.correct = true;
+               console.log(KantasHearWord.correct + " time:"+time + " curtime"+ timeupdate['currentTime']);
 //               break;
              } else {
-               if (this.correct) {
+               if (KantasHearWord.correct) {
                  console.log('not any more');
                }
-               this.correct = false;
+               KantasHearWord.correct = false;
              }
 
 //            }
@@ -176,12 +178,23 @@ var KantasHearWord = {
   },
 
   checkResponse: function(event) {
+    if (this.answered) { return true }
+    console.log("Cur time"+ global_time + "corr:" + this.correct);
     var el = $('.game-word');
+    this.answered = true;
     if (this.correct) {
       el.addClass('highlight-success');
     } else {
       el.addClass('highlight-error');
     }
+    setTimeout(this.removeClasses, 1000);
+  },
+
+  removeClasses: function() {
+    KantasHearWord.answered = false;
+    var el = $('.game-word');
+    el.removeClass('highlight-error');
+    el.removeClass('highlight-success');
   }
 
 };
