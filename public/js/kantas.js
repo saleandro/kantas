@@ -4,7 +4,7 @@ var KantasCompleteLyrics = {
 
   checkResponse: function(i, j) {
     var el = $('#word-'+i+'-'+j);
-    if (el.val().toLowerCase().replace(/[-.,()&$#!\[\]{}"']/, '') == el.attr('data-value')) {
+    if (el.val().toLowerCase().replace(/[-.,()&$#!\[\]\*{}"']/, '') == el.attr('data-value')) {
       var next = $(':input:eq(' + ($(":input").index(el) + 1) + ")");
       el.replaceWith('<span class="success" id="#word-'+i+'-'+j+'">'+el.attr('data-show')+'</span>');
       this.addSuccessScore(el);

@@ -214,7 +214,7 @@ module Kantas
       while !word_picked && checked.size < words.size
         index        = get_word_index(words)
         checked    << index
-        cleaned_word = UnicodeUtils.downcase(words[index].gsub(/[()&$#!\[\]{}"'\.,-]/i, ''))
+        cleaned_word = UnicodeUtils.downcase(words[index].gsub(/[()&$#!\[\]\*{}"'\.,-]/i, ''))
         if cleaned_word.size >= min_word_length && !%w(oh ah uh hm).include?(cleaned_word.squeeze)
           word_picked = [cleaned_word, words[index]]
         else
