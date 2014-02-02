@@ -1,32 +1,8 @@
-<script type="text/javascript">
-  $(document).ready(function() {
-  <% @words_with_times.each do |word, times| %>
-    KantasHearWord.addWord('<%= word %>', <%= times %>);
-  <% end %>
-    KantasHearWord.showWord();
-    var space = false;
-    $(document).keyup(function(evt) {
-      if (evt.keyCode == 32) {
-        space = false;
-      }
-    }).keydown(function(evt) {
-      if (evt.keyCode == 32) {
-        space = true;
-        KantasHearWord.checkResponse();
-      }
-    });
-  });
-</script>
-
 <h2 class="artist-header">
   <img src="<%= @track['album_coverart_350x350'] %>" width="248" height="248" align="left">
   <%= I18n.t(:learning, :lang_url => "/bands?#{escape_url(:language => params[:language], :genre => params[:genre])}", :artist_name =>  @track['artist_name'], :artist_url => "/bands/#{params[:mbid]}/tracks?#{escape_url(:language => params[:language], :genre => params[:genre])}") %>
 </h2>
 <br>
-
-<div class="alert alert-success hidden">
-  Well done!
-</div>
 
 <div class="row-fluid">
   <div class="span11">
@@ -40,19 +16,38 @@
         <div class="span4" id="player"></div>
         <div class="span7">
           <div id="lyrics">
-            <p class="game-word"></p>
+            <p id="game-word"></p>
           </div>
-          <img src="<%= @track['pixel_tracking_url'] %>">
-          <p class="copy"><%= @track['lyrics_copyright'] %></p>
         </div>
       <% end %>
     </div>
+    <br><br>
+    <p>Press the space key when you hear this word.</p>
+
+    <img src="<%= @track['pixel_tracking_url'] %>">
+    <p class="copy"><%= @track['lyrics_copyright'] %></p>
   </div>
 </div>
 
 <script src="http://toma.hk/api.js?v=1"></script>
 <script type="text/javascript">
   $(document).ready(function () {
+    <% @words_with_times.each do |word, times| %>
+      KantasHearWord.addWord('<%= word %>', <%= times %>);
+    <% end %>
+    KantasHearWord.game_word = $('#game-word');
+    KantasHearWord.showWord();
+    var space = false;
+    $(document).keyup(function(evt) {
+      if (evt.keyCode == 32) {
+        space = false;
+      }
+    }).keydown(function(evt) {
+      if (evt.keyCode == 32) {
+        space = true;
+        KantasHearWord.checkResponse();
+      }
+    });
     KantasHearWord.renderTrack("<%= @track['artist_name'] %>", "<%= @track['track_name'] %>");
   });
 </script>

@@ -138,16 +138,16 @@ var KantasHearWord = {
   showWord: function() {
     var word_and_time = KantasHearWord.words[KantasHearWord.word_index];
     if (word_and_time !== undefined) {
+      KantasHearWord.game_word.html(word_and_time[0]);
       KantasHearWord.game_times = word_and_time[1];
-      $('.game-word').html(word_and_time[0]);
     } else {
-      $('.game-word').html('Game over');
+      KantasHearWord.game_word.html('Game over');
     }
   },
 
   renderTrack: function(artist, title) {
-    var width = 250;
-    var height = 250;
+    var width = 300;
+    var height = 300;
     var track = window.tomahkAPI.Track(title, artist, {
       width:width,
       height:height,
@@ -161,10 +161,9 @@ var KantasHearWord = {
 //            console.log(global_time+">="+time+" and " + global_time + '<=' + nextTime);
             if (timeupdate['currentTime'] >= time && timeupdate['currentTime'] <= nextTime) {
               KantasHearWord.correct = true;
-              console.log(KantasHearWord.correct + " time:" + time + " curtime" + timeupdate['currentTime']);
+//              console.log(KantasHearWord.correct + " time:" + time + " curtime" + timeupdate['currentTime']);
             } else {
               if (KantasHearWord.correct) {
-                console.log('not any more');
                 KantasHearWord.pickNextWord();
               }
               KantasHearWord.correct = false;
@@ -179,22 +178,21 @@ var KantasHearWord = {
 
   checkResponse: function(event) {
     if (KantasHearWord.answered) { return true }
-    console.log("Cur time"+ global_time + "corr:" + KantasHearWord.correct);
-    var el = $('.game-word');
+//    console.log("Cur time"+ global_time + "corr:" + KantasHearWord.correct);
     KantasHearWord.answered = true;
     if (KantasHearWord.correct) {
-      el.addClass('highlight-success');
+      KantasHearWord.game_word.addClass('highlight-success');
+      setTimeout(KantasHearWord.pickNextWord, 1000);
     } else {
-      el.addClass('highlight-error');
+      KantasHearWord.game_word.addClass('highlight-error');
+      setTimeout(KantasHearWord.clearWord, 1000);
     }
-    setTimeout(KantasHearWord.clearWord, 1000);
   },
 
   clearWord: function() {
     KantasHearWord.answered = false;
-    var el = $('.game-word');
-    el.removeClass('highlight-error');
-    el.removeClass('highlight-success');
+    KantasHearWord.game_word.removeClass('highlight-error');
+    KantasHearWord.game_word.removeClass('highlight-success');
   },
 
   pickNextWord: function() {

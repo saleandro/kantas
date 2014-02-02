@@ -64,9 +64,9 @@ input.error {
   border: 1px solid red;
 }
 
-.game-word {
+#game-word {
   font-size: 64px;
-  margin-top: 32px;
+  margin-top: 74px;
   margin-bottom: 84px;
   text-align: center;
 }

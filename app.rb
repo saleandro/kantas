@@ -143,7 +143,7 @@ get '/bands/:mbid/tracks/:track_id/game' do
       end
     end
 
-    puts "Picked words: #{@words_with_times.inspect}"
+    #puts "Picked words: #{@words_with_times.inspect}"
 
     @play_game = !!lyrics_with_time
     @track = @track.merge(response)

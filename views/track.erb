@@ -8,10 +8,6 @@
   <div class="span11">
     <h3>“<%= @track['track_name'] %>” from “<%= @track['album_name'] %>”</h3>
 
-    <!--<b><a class="lyrics-link" href="/bands/<%= params['mbid'] %>/tracks/<%= @track['track_id'] %>/game?<%= escape_url(:language => params[:language], :genre => params[:genre]) %>">-->
-      <!--Play the game!-->
-    <!--</a></b>-->
-
     <div class="row-fluid">
       <div class="span4" id="player"></div>
       <div class="span7">
@@ -53,6 +49,10 @@
         <p class="copy"><%= @track['lyrics_copyright'] %></p>
       </div>
     </div>
+    <b><a class="lyrics-link" href="/bands/<%= params['mbid'] %>/tracks/<%= @track['track_id'] %>/game?<%= escape_url(:language => params[:language], :genre => params[:genre]) %>">
+      Play another game!
+    </a></b>
+
   </div>
 </div>
 
