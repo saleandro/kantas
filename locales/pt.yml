@@ -4,3 +4,4 @@ pt:
   perfect_score: 'Jogo perfeito!'
   score: 'Placar'
   learning: 'Aprendendo <a href="%{lang_url}">português</a> <br>  com <a href="%{artist_url}">%{artist_name}</a>'
+  highest_score: Recorde

@@ -27,7 +27,7 @@
                       KantasCompleteLyrics.checkResponse(<%= i.inspect %>, <%= j.inspect %>);
                     });
                     $('#word-<%= i %>-<%= j %>').focusout(function(event) {
-                      KantasCompleteLyrics.addScore(<%= i.inspect %>, <%= j.inspect %>);
+                      KantasCompleteLyrics.addFailureScore(<%= i.inspect %>, <%= j.inspect %>);
                     });
                   });
                 </script>
@@ -44,7 +44,8 @@
             <%= I18n.t(:success) %>
           </div>
 
-          <%= I18n.t(:score) %>: <span id="score">0</span>
+          <span><%= I18n.t(:score) %>: <span id="score">0</span></span><br>
+          <span id="highest-score"></span>
         </div>
 
         <% unless @lyrics_with_time %><p class="warning">Sorry, we don’t have the complete lyrics information for this song.</p><% end %>
@@ -59,6 +60,8 @@
 <script type="text/javascript">
   $(document).ready(function() {
     KantasCompleteLyrics.perfectScoreMessage = '<%= I18n.t(:perfect_score) %>';
+    KantasCompleteLyrics.highestScoreMessage = '<%= I18n.t(:highest_score) %>';
+    KantasCompleteLyrics.loadScoreBoard("<%= @track['artist_name'] %>", "<%= @track['track_name'] %>");
     KantasCompleteLyrics.renderTrack("<%= @track['artist_name'] %>", "<%= @track['track_name'] %>");
   });
 </script>

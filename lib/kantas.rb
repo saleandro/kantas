@@ -34,7 +34,7 @@ module Kantas
         artist = {}
         artist['mbid'] = a.attributes['id']
         artist['name'] = a.search('/name').inner_html
-        artist['country'] = a.search('/country').inner_html
+        artist['country'] = a.search('/country').inner_html.downcase
         artist['tags'] = a.search('/tag-list/tag').map {|t| t.search('/name').inner_html}
         artists << artist
       end

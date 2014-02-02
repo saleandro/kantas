@@ -10,6 +10,7 @@ var KantasCompleteLyrics = {
       this.addSuccessScore(el);
       if ($('input').length == 0) {
         var success = $('.alert-success');
+        this.addFinalScore(this.localStorageKey);
         if (this.perfectScore) {
           success.html(success.html() + ' ' + this.perfectScoreMessage);
         }
@@ -32,35 +33,58 @@ var KantasCompleteLyrics = {
     }
   },
 
-  addScore: function(i, j) {
-    if (!this.supportsLocalStorage()) { return false; }
-
+  addFailureScore: function(i, j) {
     var el = $('#word-'+i+'-'+j);
     if (el.hasClass('error')) {
-      var score = parseInt(localStorage['nikantas-score']);
-      score = score - 1;
+      this.addScore(this.localStorageKey, -1);
       this.perfectScore = false;
-      localStorage['nikantas-score'] = score;
-      this.updateScoreBoard();
+    }
+  },
+
+  addScore: function(key, value) {
+    if (!this.supportsLocalStorage()) { return false; }
+
+    if (localStorage[key] === undefined) {
+      localStorage[key] = 0;
+    }
+    var score = parseInt(localStorage[key]);
+    score = score + value;
+    localStorage[key] = score;
+    this.updateScoreBoard(score);
+  },
+
+  addFinalScore: function(key) {
+    if (!this.supportsLocalStorage()) { return false; }
+    if (localStorage[key+'-highest'] === undefined) {
+      localStorage[key+'-highest'] = 0;
+    }
+    if (localStorage[key] > localStorage[key+'-highest']) {
+      localStorage[key+'-highest'] = localStorage[key];
     }
   },
 
   addSuccessScore: function(el) {
-    if (!this.supportsLocalStorage()) { return false; }
-
-    var score = parseInt(localStorage['nikantas-score']);
-    score = score + 5;
-    localStorage['nikantas-score'] = score;
-    this.updateScoreBoard();
+    this.addScore(this.localStorageKey, 5);
   },
 
-  updateScoreBoard: function() {
+  updateScoreBoard: function(score) {
+    if (!this.supportsLocalStorage()) { return false; }
     var el = $('#score');
-    el.html(localStorage['nikantas-score']);
+    el.html(score);
+    if (localStorage[this.localStorageKey+'-highest'] !== undefined) {
+      var el = $('#highest-score');
+      el.html(this.highestScoreMessage+': '+localStorage[this.localStorageKey+'-highest']);
+    }
+  },
+
+  loadScoreBoard: function(artist, title) {
+    if (!this.supportsLocalStorage()) { return false; }
+    this.localStorageKey = artist+'-'+title+'-score';
+    localStorage[this.localStorageKey] = 0;
+    this.updateScoreBoard(localStorage[this.localStorageKey]);
   },
 
   renderTrack: function(artist, title) {
-    localStorage['nikantas-score'] = 0;
     var width = 250;
     var height = 250;
     var lyrics = $('p.lyrics-with-time');

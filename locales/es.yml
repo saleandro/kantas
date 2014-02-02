@@ -4,3 +4,4 @@ es:
   perfect_score: '¡Juego perfecto!'
   score: 'Su puntuación'
   learning: 'Aprendiendo <a href="%{lang_url}">español</a> <br> con <a href="%{artist_url}">%{artist_name}</a>'
+  highest_score: Récord
