@@ -2,7 +2,10 @@
   <img src="<%= @track['album_coverart_350x350'] %>" width="248" height="248" align="left">
   <%= I18n.t(:learning, :lang_url => "/bands?#{escape_url(:language => params[:language], :genre => params[:genre])}", :artist_name =>  @track['artist_name'], :artist_url => "/bands/#{params[:mbid]}/tracks?#{escape_url(:language => params[:language], :genre => params[:genre])}") %>
 </h2>
-<br>
+
+<div style="text-align:right"><b><a class="lyrics-link" href="/bands/<%= params['mbid'] %>/tracks/<%= @track['track_id'] %>?<%= escape_url(:language => params[:language], :genre => params[:genre]) %>">
+  Play another game!
+</a></b></div>
 
 <div class="row-fluid">
   <div class="span11">
