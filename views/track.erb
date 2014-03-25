@@ -46,7 +46,13 @@
           <span id="highest-score"></span>
         </div>
 
-        <% unless @lyrics_with_time %><p class="warning">Sorry, we don’t have the complete lyrics information for this song.</p><% end %>
+        <% if @lyrics_with_time %>
+          <% if @track['script_tracking_url']  %>
+            <script type="text/javascript" src="<%= @track['script_tracking_url'] %>"></script>
+          <% end %>
+        <% else %>
+          <p class="warning">Sorry, we don’t have the complete lyrics information for this song.</p>
+        <% end %>
         <img src="<%= @track['pixel_tracking_url'] %>">
         <p class="copy"><%= @track['lyrics_copyright'] %></p>
       </div>
