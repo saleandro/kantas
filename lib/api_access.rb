@@ -127,6 +127,8 @@ module ApiAccess
       return nil
     elsif status == 429
       return nil # echonest limit
+    elsif status == 402
+      return nil # musixmatch limit
     end
     raise "Error in request: status:#{status.inspect} response:#{response.inspect} url:#{url}"
   end
