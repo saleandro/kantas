@@ -53,7 +53,7 @@
         <% else %>
           <p class="warning">Sorry, we don’t have the complete lyrics information for this song.</p>
         <% end %>
-        <img src="<%= @track['pixel_tracking_url'] %>">
+        <img src="<%= @track['pixel_tracking_url'] %>" style="display:none">
         <p class="copy"><%= @track['lyrics_copyright'] %></p>
       </div>
     </div>
