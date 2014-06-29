@@ -139,6 +139,7 @@ p.highlight-success {
   height: 250px;
   font-size: 24px;
   font-weight: bold;
+  display: block;
 }
 
 .album {
