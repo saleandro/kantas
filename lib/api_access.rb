@@ -51,6 +51,17 @@ module ApiAccess
 
   private
 
+  APIS = {musicbrainz: 'http://www.musicbrainz.org/ws/2',
+          echonest: 'http://developer.echonest.com/api/v4',
+          lastfm: 'http://ws.audioscrobbler.com/2.0/',
+          musixmatch: 'http://api.musixmatch.com/ws/1.1'
+    }
+  def build_url(api, path, params)
+    query_string = params.map {|k,v| "#{k}=#{CGI.escape(v.to_s)}"}.join('&')
+    query_string = '?'+query_string if query_string != ''
+    "#{APIS[api]}#{path}#{query_string}"
+  end
+
   def expired_cache?(data)
     data.nil?
   end

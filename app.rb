@@ -66,10 +66,6 @@ get '/bands/:mbid/tracks' do
   tracks.each do |track_title|
     lyrics = Kantas.lyrics(params['mbid'], track_title)
     if lyrics && lyrics['lyrics_language'] == params['language']
-      #echonest_track_id = Kantas.track_id(@artist['name'], track_title)
-      #if echonest_track_id
-      #  puts Kantas.track_audio_summary(echonest_track_id)
-      #end
       tracks_with_lyrics << lyrics
     end
   end
