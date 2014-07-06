@@ -1,4 +1,19 @@
 var global_time = 0;
+
+var ArtistsImages = {
+  init: function() {
+    $('img.thumbnail').load(function(event) {
+      var img = $(event.target);
+      var mbid = img.data('mbid');
+      if (mbid !== undefined && img.attr('src') == ArtistsImages.default_image) {
+        $.get('/bands/'+mbid+'/image', function(url) {
+          img.attr('src', url);
+        });
+      }
+    });
+  }
+}
+
 var KantasCompleteLyrics = {
   perfectScore: true,
   perfectScoreMessage: '',

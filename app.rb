@@ -50,6 +50,10 @@ get '/bands' do
   erb :bands
 end
 
+get '/bands/:mbid/image' do
+  Kantas.artist_image(params['mbid'])
+end
+
 get '/bands/:mbid/tracks' do
   unless Kantas.languages.keys.include?(params['language']) && params['mbid']
     redirect '/'
@@ -64,10 +68,8 @@ get '/bands/:mbid/tracks' do
   tracks =  Kantas.top_tracks(params['mbid']).first(40)
   tracks_with_lyrics = []
   tracks.each do |track_title|
-    lyrics = Kantas.lyrics(params['mbid'], track_title)
-    if lyrics && lyrics['lyrics_language'] == params['language']
-      tracks_with_lyrics << lyrics
-    end
+    lyrics = Kantas.lyrics(params['mbid'], track_title, params['language'])
+    tracks_with_lyrics << lyrics if lyrics
   end
   @tracks = tracks_with_lyrics.uniq {|t| t['track_id']}
   erb :tracks

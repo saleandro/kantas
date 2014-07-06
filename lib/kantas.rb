@@ -4,6 +4,8 @@ require 'active_support'
 require "unicode_utils/downcase"
 require File.dirname(__FILE__) + '/api_access'
 
+DEFAULT_IMAGE = 'http://www.songkick.com/images/default_images/col2/default-artist.png'
+
 module Kantas
   class << self
     include ApiAccess
@@ -38,12 +40,7 @@ module Kantas
         artists << artist
       end
       artists = artists.flatten.compact
-      if limit
-        artists = artists.shuffle.first(limit)
-      end
-      artists.each do |artist|
-        artist['image'] = artist_image(artist['mbid'])
-      end
+      artists = artists.shuffle.first(limit) if limit
       artists
     end
 
@@ -58,7 +55,6 @@ module Kantas
         artist['name']    = a.search('/name').inner_html
         artist['country'] = a.search('/country').inner_html.downcase
         artist['tags']    = a.search('/tag-list/tag').map {|t| t.search('/name').inner_html}
-        artist['image']   = artist_image(artist['mbid'])
         artists << artist
       end
       artists.flatten.compact.select {|b| countries.include?(b['country'])}
@@ -79,7 +75,7 @@ module Kantas
     def artist_image(mbid)
       params = {api_key: Kantas.key('echonest'), id: "musicbrainz:artist:#{mbid}", format: 'json', results: 1, start: 0, license: 'unknown'}
       data   = cached_data_from(build_url(:echonest, '/artist/images', params))
-      data && data['response']['images'] && data['response']['images'].any? ? data['response']['images'].first['url'] : 'http://www.songkick.com/images/default_images/col2/default-artist.png'
+      data && data['response']['images'] && data['response']['images'].any? ? data['response']['images'].first['url'] : DEFAULT_IMAGE
     end
 
     def top_tracks(mbid)
@@ -103,12 +99,7 @@ module Kantas
       data = cached_data_from(build_url(:musixmatch, '/track.search', params))
       return nil unless data && data['message'] && data['message']['body']['track_list'].any?
       track = data['message']['body']['track_list'].first['track']
-      track_id = track['track_id']
-
-# TODO: why get lyrics 2?
-      lyrics = lyrics_by_track_id(track_id)
-      lyrics.merge!(track)
-      lyrics
+      track
     end
 
     def track_by_id(track_id)
@@ -187,6 +178,10 @@ module Kantas
       {'lyrics_body' => removed_lyrics, 'removed_words' => removed_words}
     end
 
+    def clean_word(word)
+      UnicodeUtils.downcase(word.gsub(/[()&$#!\[\]\*{}"'\.,-?]/i, ''))
+    end
+
     private
 
     def pick_lines(sentences, size)
@@ -209,10 +204,6 @@ module Kantas
         end
       end
       return [index, word_picked]
-    end
-
-    def clean_word(word)
-      UnicodeUtils.downcase(word.gsub(/[()&$#!\[\]\*{}"'\.,-]/i, ''))
     end
 
     def get_word_index(words)

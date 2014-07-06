@@ -26,6 +26,10 @@ a.artist-image img {
   margin: 10px;
 }
 
+.examples {
+  list-style: none;
+}
+
 .bands, .tracks {
   list-style: none;
 }
