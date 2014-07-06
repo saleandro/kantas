@@ -4,7 +4,18 @@ module DataStore
   class << self
     def set(key, value)
       if store.is_a?(Redis)
-        store[key] = value if value
+        @tries = 0
+        begin
+          store[key] = value if value
+        rescue Redis::CommandError => e
+          if e.message =~ /command not allowed when used memory > 'maxmemory'/ && @tries < 3
+            store.flushall
+            @tries += 1
+            retry
+          else
+            raise
+          end
+        end
       else
         if get(key)
           store[:cache].filter(:key => key).update(:value => value)
