@@ -25,6 +25,8 @@ get '/' do
 end
 
 get '/bands' do
+  halt 404
+
   unless Kantas.languages.keys.include?(params['language'])
     redirect '/'
   end
@@ -51,10 +53,14 @@ get '/bands' do
 end
 
 get '/bands/:mbid/image' do
+  halt 404
+
   Kantas.artist_image(params['mbid'])
 end
 
 get '/bands/:mbid/tracks' do
+  halt 404
+
   unless Kantas.languages.keys.include?(params['language']) && params['mbid']
     redirect '/'
   end
@@ -76,6 +82,8 @@ get '/bands/:mbid/tracks' do
 end
 
 get '/bands/:mbid/tracks/:track_id' do
+  halt 404
+
   unless Kantas.languages.keys.include?(params['language']) && params['mbid']
     redirect '/'
   end
@@ -101,6 +109,8 @@ get '/bands/:mbid/tracks/:track_id' do
 end
 
 get '/bands/:mbid/tracks/:track_id/game' do
+  halt 404
+
   unless Kantas.languages.keys.include?(params['language']) && params['mbid']
     redirect '/'
   end
