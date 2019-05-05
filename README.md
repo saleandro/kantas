@@ -1,4 +1,4 @@
 kantas
 ======
 
-> redis-server
+Deprecated project.
